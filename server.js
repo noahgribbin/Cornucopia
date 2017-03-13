@@ -10,7 +10,7 @@ const dotenv = require('dotenv');
 
 dotenv.load();
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3003;
 const app = express();
 
 mongoose.connect(process.env.MONGODB_URI);
