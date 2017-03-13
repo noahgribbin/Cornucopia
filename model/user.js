@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const Promise = require('bluebird');
 const debug = require('debug')('cornucopia:user');
+const jwt = require('jsonwebtoken');
 
 const Schema = mongoose.Schema;
 const userSchema = Schema({
@@ -58,3 +59,16 @@ userSchema.methods.generateFindHash = function(){
   });
 };
 
+userSchema.methods.generateToken = function(){
+  debug('generateToken');
+
+  return new Promise((resolve, reject) => {
+    this.generateFindHash()
+    .then( findHash => {
+      resolve( jwt.sign({token : findHash}, process.env.APP_SECRET));
+    })
+    .catch(err => reject(err));
+  });
+};
+
+module.exports = mongoose.model('user', userSchema);
