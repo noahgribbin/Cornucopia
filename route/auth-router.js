@@ -5,7 +5,7 @@ const createError = require('http-errors');
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
 
-const User = require('../model/user.js')
+const User = require('../model/user.js');
 const basicAuth = require('../lib/basic-auth-middleware.js');
 
 const authRouter = module.exports = Router();
