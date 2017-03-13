@@ -72,7 +72,7 @@ recipeRouter.put('/api/recipe/:id', bearerAuth, jsonParser, function(req, res, n
   debug('PUT: /api/recipe/:id');
 
   if(req._body !== true) return next(createError(400, 'bad request'));
-  Recipe.findByIdAndUpdate(reqs.params.id, req.body, { new: true })
+  Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
   .then( recipe => res.json(recipe))
   .catch(next);
 });
