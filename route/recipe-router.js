@@ -10,8 +10,8 @@ const Recipe = require('../model/recipe.js');
 
 const recipeRouter = module.exports = Router();
 
-recipeRouter.post('/api/recipes', bearerAuth, jsonParser, function(req, res, next) {
-  debug('POST: /api/recipes');
+recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next) {
+  debug('POST: /api/recipe');
 
   if (!req.body) return next(createError(400, 'expected body'));
   if (!req.user) return next(createError(400, 'expected user'));
@@ -20,3 +20,11 @@ recipeRouter.post('/api/recipes', bearerAuth, jsonParser, function(req, res, nex
   .then(recipe => res.json(recipe))
   .catch(next);
 };
+
+recipe.get('/api/recipe/:id', function(req, res, next) {
+  debug('GET: /api/recipe/:id');
+
+  Recipe.findById(req.params.id)
+  .then(recipe => res.json(recipe))
+  .catch(next);
+});
