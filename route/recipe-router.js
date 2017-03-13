@@ -7,6 +7,7 @@ const createError = require('http-errors');
 const jsonParser = require('body-parser');
 const Router = require('express').Router;
 const Recipe = require('../model/recipe.js');
+const Profile = require('../model/profile.js');
 
 const recipeRouter = module.exports = Router();
 
@@ -19,7 +20,7 @@ recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next
   return new Recipe(req.body).save()
   .then(recipe => res.json(recipe))
   .catch(next);
-};
+});
 
 recipeRouter.get('/api/recipe/:id', function(req, res, next) {
   debug('GET: /api/recipe/:id');
@@ -30,9 +31,29 @@ recipeRouter.get('/api/recipe/:id', function(req, res, next) {
 });
 
 recipeRouter.get('/api/recipe/:profileID', function(req, res, next) {
-  debug('GET: /api/recipe/:id');
+  debug('GET: /api/recipe/:profileID');
 
   Recipe.findById(req.params.profileID)
   .then(profile.recipes => res.json(profile.recipes))
+  .catch(next);
+});
+
+recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
+  debug('DELETE: /api/recipe/:id');
+
+  Profile.findById(req.user._id)
+  .then(profile => {
+    let recipeArray = profile.recipes;
+    let recipeIndex = recipeArray.indexOf(req.params.id);
+    if (recipeIndex === -1) return next(createError(404, 'not found'));
+    recipeArray.splice(recipeIndex, 1);
+    profile.recipes = recipeArray;
+    Profile.update( { req.user._id }, { $set: {recipes: recipeArray} } )
+    .then( () => {
+      Recipe.findByIdAndRemove(req.params.id)
+      res.status(204).send();
+    })
+    .catch(next);
+  })
   .catch(next);
 });
