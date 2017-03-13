@@ -10,6 +10,7 @@ const dotenv = require('dotenv');
 const errors = require('./lib/error-middleware.js');
 
 const recipeRouter = require('./route/recipe-router.js');
+const authRouter = require('./route/auth-router.js');
 
 dotenv.load();
 
@@ -24,7 +25,8 @@ mongoose.connect(process.env.MONGODB_URI);
 app.use(cors());
 app.use(morgan('dev'));
 
-app.use(recipeRouter);
+// app.use(recipeRouter);
+app.use(authRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {

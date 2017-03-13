@@ -38,4 +38,3 @@ describe('Auth Routes', function(){
     });
   });
 });
-
