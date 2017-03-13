@@ -7,6 +7,7 @@ const debug = require('debug')('cornucopia:server');
 const Promise = require('bluebird');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const errors = require('./lib/error-middleware.js');
 
 const recipeRouter = require('./route/recipe-router.js');
 
@@ -24,6 +25,7 @@ app.use(cors());
 app.use(morgan('dev'));
 
 app.use(recipeRouter);
+app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {
   debug((`server up: ${PORT}`));

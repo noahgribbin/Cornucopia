@@ -6,6 +6,8 @@ const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser');
 const Router = require('express').Router;
+
+const bearerAuth = ('../lib/bearer-auth-middleware.js');
 const Recipe = require('../model/recipe.js');
 const Profile = require('../model/profile.js');
 
