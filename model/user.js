@@ -23,10 +23,10 @@ userSchema.methods.generatePasswordHash = function(password){
     bcrypt.hash(password, 10, (err, hash) => {
       if (err) return reject(err);
       this.password = hash;
-      resolve(this)
-    })
-  })
-}
+      resolve(this);
+    });
+  });
+};
 
 userSchema.methods.comparePasswordHash = function(password){
   debug('comparePasswordHash');
