@@ -24,3 +24,15 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
   .then( token => res.send(token))
   .catch( err => next(createError(400, err.message)));
 });
+
+authRouter.get('/api/signin', basicAuth, function(req, res, next) {
+  // why not json parser?
+  debug('GET /api/signin');
+
+  User.findOne({ username: req.auth.username})
+  .then( user => user.comparePasswordHash(req.auth.password))
+  .then( user => user.generateToken())
+  // whats goin on with the token
+  .then( token => res.send(token))
+  .catch(next);
+});
