@@ -9,7 +9,8 @@
   "scripts": {
     "test": "DEBUG='cornucopia*' mocha",
     "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "start": "DEBUG='cornucopia*' node server.js"
+    "start": "DEBUG='cornucopia*' node server.js",
+    "lint": "./node_modules/eslint/bin/eslint.js ."
   },
   "repository": {
     "type": "git",
@@ -42,6 +43,7 @@
     "aws-sdk-mock": "^1.6.1",
     "chai": "^3.5.0",
     "coveralls": "^2.12.0",
+    "eslint": "^3.17.1",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "superagent": "^3.5.0"
