@@ -47,12 +47,7 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
 
   if (req._body !== true) return next(createError(400, 'nothing to update'));
 
-  Profile.findById(req.params.id)
-  .then(profile => {
-    if (profile.userID.toString() !== req.user._id.toString()) return next(createError(401, 'invalid user'));
-    return;
-  })
-  .then( () => Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
-  .then(profile => res.json(profile))
-  .catch(next);
+  Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    .then(profile => res.json(profile))
+    .catch(next);
 });
