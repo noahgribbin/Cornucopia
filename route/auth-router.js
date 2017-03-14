@@ -15,6 +15,7 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
   debug('POST /api/signup');
 
   let password = req.body.password;
+  console.log('PASS', req.body.password);
   delete req.body.password;
 
   let user = new User(req.body);
@@ -28,11 +29,14 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   // why not json parser?
   debug('GET /api/signin');
-
-  User.findOne({ username: req.auth.username})
-  .then( user => user.comparePasswordHash(req.auth.password))
-  .then( user => user.generateToken())
   // whats goin on with the token
+  User.findOne({ username: req.auth.username})
+  .then( user => {
+    console.log('req.auth.password', req.auth.password);
+    console.log('user ', user);
+    return user.comparePasswordHash(req.auth.password);
+  })
+  .then( user => user.generateToken())
   .then( token => res.send(token))
   .catch(next);
 });

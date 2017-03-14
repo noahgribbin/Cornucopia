@@ -14,10 +14,10 @@ const authRouter = require('./route/auth-router.js');
 
 dotenv.load();
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 const app = express();
 
-
+mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI);
 
 // let morganFormat = process.env.PRODUCTION ? 'common' : 'dev';

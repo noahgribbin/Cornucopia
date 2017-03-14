@@ -30,8 +30,44 @@ describe('Auth Routes', function(){
         .end((err, res) => {
           if(err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.username).to.equal('test username');
+          expect(res.text).to.be.a('string');
           // expect(res.body.password)
+          done();
+        });
+      });
+    });
+  });
+
+  describe('GET /api/signin', function(){
+    describe('with a valid body', function(){
+
+      before( done => {
+        let password  = exampleUser.password;
+        delete exampleUser.password;
+        let user = new User(exampleUser);
+        console.log('user test', password);
+        user.generatePasswordHash(password)
+        .then( user => user.save())
+        .then( user => user.generateToken())
+        .then( () => done())
+        .catch(err => done(err));
+      });
+
+      after( done => {
+        User.remove({})
+        .then( () => done())
+        .catch(done);
+      });
+
+      it('should return a token', done => {
+        request.get(`${url}/api/signin`)
+        .auth('test username','test password')
+        .end((err, res) => {
+          if(err) return done(err);
+          console.log('GRRRRAAAAAA', res.body);
+          expect(res.status).to.equal(200);
+          expect(res.text).to.be.a('string');
+          console.log('res.text', res.text);
           done();
         });
       });

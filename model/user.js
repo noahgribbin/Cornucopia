@@ -13,7 +13,7 @@ const userSchema = Schema({
   username : {type: String, required: true, unique: true},
   email: {type: String, required: true, unique: true},
   password: {type: String, required: true},
-  findHash: {type: String, required: true }
+  findHash: {type: String, unique: true }
 });
 
 userSchema.methods.generatePasswordHash = function(password){
@@ -22,6 +22,7 @@ userSchema.methods.generatePasswordHash = function(password){
   return new Promise((resolve, reject) => {
     bcrypt.hash(password, 10, (err, hash) => {
       if (err) return reject(err);
+      console.log('typeof', typeof hash);
       this.password = hash;
       resolve(this);
     });
@@ -35,6 +36,8 @@ userSchema.methods.comparePasswordHash = function(password){
     bcrypt.compare(password, this.password, (err, valid) => {
       if(err) return reject(err);
       if(!valid) return reject(createError(401, 'Wrong password!'));
+      console.log('__________________________');
+      resolve(this);
     });
   });
 };
