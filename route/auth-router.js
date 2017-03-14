@@ -29,8 +29,10 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   // why not json parser?
   debug('GET /api/signin');
   // whats goin on with the token
+  console.log('RRRRRRRRRRRRRRRRRREC', req.body);
   User.findOne({ username: req.auth.username})
   .then( user => {
+    // console.log('djkasndkjasndkjaaaaaaaaaannnnnnnnnnnnnnnnnnn', user);
     return user.comparePasswordHash(req.auth.password);
   })
   .then( user => user.generateToken())
