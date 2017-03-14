@@ -66,7 +66,7 @@
 //     profile.recipes = recipeArray;
 //     Profile.update( { _id: req.user._id }, { $set: {recipes: recipeArray} } )
 //     .then( () => {
-//       Recipe.findByIdAndRemove(req.params.id);
+//       Recipe.findByIdAndRemove(req.params.id)
 //       res.status(204).send();
 //     })
 //     .catch(next);

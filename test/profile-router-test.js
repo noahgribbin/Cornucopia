@@ -10,35 +10,22 @@ require('../server.js');
 const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
-  username: 'dastestusername',
+  username: 'testusername',
   password: 'lalala',
   email: 'example@example.com'
 };
 
 const exampleProfile = {
   name: 'example name',
-  picURI: 'example uri'
+  profilePicURI: 'example uri'
 };
 
 describe('Profile Routes', () => {
-  // afterEach( done => {
-  //   Promise.all([
-  //     User.remove({}),
-  //     Profile.remove({})
-  //   ])
-  //   .then( () => {
-  //     delete exampleProfile.userID;
-  //     done();
-  //   })
-  //   .catch(done);
-  // });
   describe('POST /api/profile', () => {
-    describe('with a valid body', () => {
-      before( done => {
-        let password  = exampleUser.password;
-        delete exampleUser.password;
-        let user = new User(exampleUser);
-        user.generatePasswordHash(password)
+      beforeEach( done => {
+        let password = exampleUser.password;
+        new User(exampleUser)
+        .generatePasswordHash(exampleUser.password)
         .then( user => user.save())
         .then( user => {
           this.tempUser = user;
@@ -46,36 +33,69 @@ describe('Profile Routes', () => {
         })
         .then(token => {
           this.tempToken = token;
-          return;
+          done();
         })
-        .then( () => {
-          exampleProfile.userID = user._id.toString();
-          new Profile(exampleProfile).save()
-          .then( profile => {
-            this.tempProfile = profile;
-            done();
-          })
-          .catch(err => done(err));
-        })
+        // .then( () => {
+        //   // exampleProfile.userID = this.tempUser._id.toString();
+        //   console.log('example profile userid', exampleProfile.userID);
+        //   new Profile(exampleProfile).save()
+        //   .then( profile => {
+        //     console.log('profile', profile)
+        //     this.tempProfile = profile;
+        //     done();
+        //   })
+        //   .catch(err => done(err));
+        // })
         .catch( err => done(err));
       });
-      it('should return a token', done => {
-        // exampleProfile.userID = this.tempUser._id.toString();
-        request.post(`${url}/api/profile`)
-        .set( { Authorization: `Bearer ${this.tempToken}` } )
-        .send(exampleProfile)
-        .end((err, res) => {
-          if(err) return done(err);
-          let date = new Date(res.body.created).toString();
-          expect(res.status).to.equal(200);
-          expect(date).to.not.equal('invalid date');
-          expect(res.body.name).to.equal(exampleProfile.name);
-          expect(res.body.picURI).to.equal(exampleProfile.picURI);
+      afterEach( done => {
+        Promise.all([
+          User.remove({}),
+          Profile.remove({})
+        ])
+        .then( () => {
+          delete exampleProfile.userID;
           done();
+        })
+        .catch(done);
+      });
+      describe('with a valid body', () => {
+        it('should return a token', done => {
+          request.post(`${url}/api/profile`)
+          .set( { Authorization: `Bearer ${this.tempToken}` } )
+          .send(exampleProfile)
+          .end((err, res) => {
+            if(err) return done(err);
+            let date = new Date(res.body.created).toString();
+            expect(res.status).to.equal(200);
+            expect(res.body.name).to.equal(exampleProfile.name);
+            expect(res.body.picURI).to.equal(exampleProfile.picURI);
+            expect(date).to.not.equal('invalid date');
+            done();
+          });
+        });
+      });
+      describe('with an invalid body', () => {
+        it('should return a 400 error', done => {
+          request.post(`${url}/api/profile`)
+          .set( { Authorization: `Bearer ${this.tempToken}` } )
+          .end(err => {
+            expect(err.status).to.equal(400);
+            done();
+          });
+        });
+      });
+      describe('with an invalid token', () => {
+        it('should return 401 error', done => {
+          request.post(`${url}/api/profile`)
+          .send(exampleProfile)
+          .end(err => {
+            expect(err.status).to.equal(401);
+            done();
+          });
         });
       });
     });
-  });
   describe('GET /api/signin', () => {
     // describe('with a valid body', () => {
     //   it('should return a token', done => {
