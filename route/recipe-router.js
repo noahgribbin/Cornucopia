@@ -4,7 +4,7 @@ const debug = require('debug')('cornucopia:recipe-router');
 const fs = require('fs');
 const Promise = require('bluebird');
 const createError = require('http-errors');
-const jsonParser = require('body-parser');
+const jsonParser = require('body-parser').json();
 const Router = require('express').Router;
 
 const bearerAuth = ('../lib/bearer-auth-middleware.js');
@@ -71,7 +71,7 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
 recipeRouter.put('/api/recipe/:id', bearerAuth, jsonParser, function(req, res, next) {
   debug('PUT: /api/recipe/:id');
 
-  if(req._body !== true) return next(createError(400, 'bad request'));
+  if(req._body !== true) return next(createError(400, 'nothing to update'));
   Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
   .then( recipe => res.json(recipe))
   .catch(next);
