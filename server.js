@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const errors = require('./lib/error-middleware.js');
 
+const profileRouter = require('./route/profile-router.js');
 const recipeRouter = require('./route/recipe-router.js');
 const authRouter = require('./route/auth-router.js');
 
@@ -24,9 +25,9 @@ mongoose.connect(process.env.MONGODB_URI);
 
 app.use(cors());
 app.use(morgan('dev'));
-
-// app.use(recipeRouter);
 app.use(authRouter);
+app.use(profileRouter);
+// app.use(recipeRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {
