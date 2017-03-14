@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('debug')('cornucopia:recipe-router');
-const fs = require('fs');
 const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
@@ -13,12 +12,16 @@ const Profile = require('../model/profile.js');
 
 const recipeRouter = module.exports = Router();
 
-recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next) {
+recipeRouter.post('/api/recipe/', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/recipe');
 
   if (!req.body) return next(createError(400, 'expected body'));
   if (!req.user) return next(createError(400, 'expected user'));
-  req.body.profileID = req.profile._id;
+
+  Profile.findOne( {userID: req.user._id} )
+  .then(profile => req.body.profileID = profile._id)
+  .catch(next);
+
   return new Recipe(req.body).save()
   .then(recipe => {
     Profile.findById(recipe.profileID)
@@ -43,8 +46,11 @@ recipeRouter.get('/api/recipe/:id', function(req, res, next) {
 recipeRouter.get('/api/recipe/:profileID', function(req, res, next) {
   debug('GET: /api/recipe/:profileID');
 
-  Recipe.findById(req.params.profileID)
-  .then(profile => res.json(profile.recipes))
+  Profile.findById(req.params.profileID)
+  .then(profile => {
+    // profile.populate('recipes')
+    res.json(profile.recipes);
+  })
   .catch(next);
 });
 
