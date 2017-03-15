@@ -132,48 +132,41 @@ describe('Comment Routes', () => {
       });
     });
   });
-  // describe('GET /api/recipe/:id', () => {
-  //   beforeEach(done => {
-  //     exampleRecipe.profileID = this.tempProfile._id;
-  //     new Recipe(exampleRecipe).save()
-  //     .then(recipe => {
-  //       this.tempRecipe = recipe;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   afterEach(done => {
-  //     Recipe.remove({})
-  //     .then( () => {
-  //       delete exampleRecipe.profileID;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   })
-  //   describe('with a valid recipe id', () => {
-  //     it('should return a recipe', done => {
-  //       request.get(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(200);
-  //         expect(res.body.ingredients.toString()).to.equal(exampleRecipe.ingredients.toString());
-  //         expect(res.body.instructions).to.equal(exampleRecipe.instructions);
-  //         expect(res.body.categories.toString()).to.equal(exampleRecipe.categories.toString());
-  //         expect(res.body.picURI).to.equal(exampleRecipe.picURI);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid recipe id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.get(`${url}/api/recipe/alskdjf`)
-  //       .end(err => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
+  describe('GET /api/comment/:id', () => {
+    beforeEach(done => {
+      exampleComment.commenterProfileID = this.tempProfile._id;
+      exampleComment.recipeID = this.tempRecipe._id;
+      new ResComment(exampleComment).save()
+      .then(comment => {
+        this.tempComment = comment;
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid comment id', () => {
+      it('should return a comment', done => {
+        request.get(`${url}/api/comment/${this.tempComment._id.toString()}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          let date =
+          expect(res.status).to.equal(200);
+          expect(res.body.comment).to.equal(exampleComment.comment);
+          expect(res.body.recipeID.toString()).to.equal(exampleComment.recipeID.toString());
+          expect(res.body.commenterProfileID.toString()).to.equal(exampleComment.commenterProfileID.toString());
+          done();
+        });
+      });
+    });
+    describe('without a valid comment id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/comment/alskdjf`)
+        .end(err => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
   // describe('GET /api/allrecipes/:profileID', () => {
   //   beforeEach(done => {
   //     exampleRecipe.profileID = this.tempProfile._id;
@@ -284,53 +277,57 @@ describe('Comment Routes', () => {
       });
     });
   });
-  // describe('DELETE /api/recipe/:id', () => {
-  //   beforeEach(done => {
-  //     exampleRecipe.profileID = this.tempProfile._id;
-  //     new Recipe(exampleRecipe).save()
-  //     .then(recipe => {
-  //       this.tempRecipe = recipe;
-  //       this.tempProfile.recipes.push(this.tempRecipe._id);
-  //       return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
-  //     })
-  //     .then(profile => {
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   afterEach(done => {
-  //     Recipe.remove({})
-  //     .then( () => {
-  //       delete exampleRecipe.profileID;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   describe('with a valid recipe id', () => {
-  //     it('should return a 204 status', done => {
-  //       request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(204);
-  //         Profile.findById(this.tempProfile._id)
-  //         .then(profile => {
-  //           expect(profile.recipes.indexOf(this.tempRecipe._id)).to.equal(-1);
-  //           done();
-  //         })
-  //         .catch(done);
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid recipe id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.delete(`${url}/api/profile/n0taval1d1d00p5`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
+  describe('DELETE /api/comment/:id', () => {
+    beforeEach(done => {
+      exampleComment.commenterProfileID = this.tempProfile._id;
+      exampleComment.recipeID = this.tempRecipe._id;
+      new ResComment(exampleComment).save()
+      .then(comment => {
+        this.tempComment = comment;
+        this.tempRecipe.comments.push(comment._id);
+        this.tempRecipe.save();
+        this.tempProfile.comments.push(comment._id);
+        this.tempProfile.save();
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid comment id', () => {
+      it('should return a 204 status', done => {
+        request.delete(`${url}/api/comment/${this.tempComment._id.toString()}`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(204);
+          ResComment.findById(this.tempComment._id)
+          .catch(err => {
+            expect(err).to.be(404);
+          });
+          Profile.findById(this.tempProfile._id)
+          .then(profile => {
+            console.log('PROFILE COMMENTS IN TEST', profile.comments);
+            expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
+          })
+          .catch(done);
+          // Recipe.findById(this.tempRecipe._id)
+          // .then(recipe => {
+          //   expect(recipe.comments.indexOf(this.tempComment._id)).to.equal(-1);
+          //   done();
+          // })
+          // .catch(done);
+          done();
+        });
+      });
+    });
+    describe('without a valid comment id', () => {
+      it('should return a 404 error', done => {
+        request.delete(`${url}/api/comment/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
 });
