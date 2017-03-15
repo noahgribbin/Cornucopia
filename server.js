@@ -13,6 +13,7 @@ const authRouter = require('./route/auth-router.js');
 const profileRouter = require('./route/profile-router.js');
 const recipeRouter = require('./route/recipe-router.js');
 const commentRouter = require('./route/comment-router.js');
+// const upvoteRouter = require('./route/upvote-router.js');
 
 dotenv.load();
 
@@ -31,6 +32,7 @@ app.use(authRouter);
 app.use(profileRouter);
 app.use(recipeRouter);
 app.use(commentRouter);
+// app.use(upvoteRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {

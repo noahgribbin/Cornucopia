@@ -5,7 +5,7 @@ const request = require('superagent');
 const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
-const ResComment = require('../model/comment.js');
+const Upvote = require('../model/upvote.js');
 
 require('../server.js');
 
@@ -30,11 +30,11 @@ const exampleRecipe = {
   categories: ['example cat 1', 'example cat 2']
 };
 
-const exampleComment = {
-  comment: 'example comment'
+const exampleUpvote = {
+  upvote: 'example upvote'
 };
 
-describe('Comment Routes', () => {
+describe('Upvote Routes', () => {
   beforeEach( done => {
     let password = exampleUser.password;
     new User(exampleUser)
@@ -75,36 +75,36 @@ describe('Comment Routes', () => {
     Promise.all([
       User.remove({}),
       Profile.remove({}),
-      ResComment.remove({}),
+      Upvote.remove({}),
       Recipe.remove({})
     ])
     .then( () => {
       delete exampleProfile.userID;
       delete exampleRecipe.profileID;
-      delete exampleComment.recipeID;
-      delete exampleComment.commenterProfileID;
+      delete exampleUpvote.recipeID;
+      delete exampleUpvote.upvoteerProfileID;
       this.tempProfile.recipes = [];
       done();
     })
     .catch(done);
   });
-  describe('POST /api/comment/:recipeID', () => {
+  describe('POST /api/upvote/:recipeID', () => {
     describe('with a valid body and recipe ID', () => {
-      it('should return a comment', done => {
-        exampleComment.recipeID = this.tempRecipe._id;
-        exampleComment.commenterProfileID = this.tempProfile._id;
-        request.post(`${url}/api/comment/${this.tempRecipe._id.toString()}`)
+      it('should return a upvote', done => {
+        exampleUpvote.recipeID = this.tempRecipe._id;
+        exampleUpvote.upvoteerProfileID = this.tempProfile._id;
+        request.post(`${url}/api/upvote/${this.tempRecipe._id.toString()}`)
         .set( { Authorization: `Bearer ${this.tempToken}` } )
-        .send(exampleComment)
+        .send(exampleUpvote)
         .end((err, res) => {
           if(err) return done(err);
           let date = new Date(res.body.created).toString();
           expect(res.status).to.equal(200);
-          expect(res.body.profile.comments[0].toString()).to.equal(res.body.comment._id.toString());
-          expect(res.body.recipe.comments[0].toString()).to.equal(res.body.comment._id.toString());
-          expect(res.body.comment.comment).to.equal(exampleComment.comment);
-          expect(res.body.comment.commenterProfileID).to.equal(this.tempProfile._id.toString());
-          expect(res.body.comment.recipeID).to.equal(this.tempRecipe._id.toString());
+          expect(res.body.profile.upvotes[0].toString()).to.equal(res.body.upvote._id.toString());
+          expect(res.body.recipe.upvotes[0].toString()).to.equal(res.body.upvote._id.toString());
+          expect(res.body.upvote.upvote).to.equal(exampleUpvote.upvote);
+          expect(res.body.upvote.upvoteerProfileID).to.equal(this.tempProfile._id.toString());
+          expect(res.body.upvote.recipeID).to.equal(this.tempRecipe._id.toString());
           expect(date).to.not.equal('invalid date');
           done();
         });
@@ -112,7 +112,7 @@ describe('Comment Routes', () => {
     });
     describe('with an invalid body', () => {
       it('should return a 400 error', done => {
-        request.post(`${url}/api/comment/${this.tempRecipe._id}`)
+        request.post(`${url}/api/upvote/${this.tempRecipe._id}`)
         .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           expect(err.status).to.equal(400);
@@ -123,8 +123,8 @@ describe('Comment Routes', () => {
     });
     describe('with an invalid token', () => {
       it('should return 401 error', done => {
-        request.post(`${url}/api/comment/${this.tempRecipe._id}`)
-        .send(exampleComment)
+        request.post(`${url}/api/upvote/${this.tempRecipe._id}`)
+        .send(exampleUpvote)
         .end((err, res) => {
           expect(err.status).to.equal(401);
           expect(res.text).to.equal('authorization header required');
@@ -133,33 +133,33 @@ describe('Comment Routes', () => {
       });
     });
   });
-  describe('GET /api/comment/:id', () => {
+  describe('GET /api/upvote/:id', () => {
     beforeEach(done => {
-      exampleComment.commenterProfileID = this.tempProfile._id;
-      exampleComment.recipeID = this.tempRecipe._id;
-      new ResComment(exampleComment).save()
-      .then(comment => {
-        this.tempComment = comment;
+      exampleUpvote.upvoteerProfileID = this.tempProfile._id;
+      exampleUpvote.recipeID = this.tempRecipe._id;
+      new Upvote(exampleUpvote).save()
+      .then(upvote => {
+        this.tempUpvote = upvote;
         done();
       })
       .catch(done);
     });
-    describe('with a valid comment id', () => {
-      it('should return a comment', done => {
-        request.get(`${url}/api/comment/${this.tempComment._id.toString()}`)
+    describe('with a valid upvote id', () => {
+      it('should return a upvote', done => {
+        request.get(`${url}/api/upvote/${this.tempUpvote._id.toString()}`)
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.comment).to.equal(exampleComment.comment);
-          expect(res.body.recipeID.toString()).to.equal(exampleComment.recipeID.toString());
-          expect(res.body.commenterProfileID.toString()).to.equal(exampleComment.commenterProfileID.toString());
+          expect(res.body.upvote).to.equal(exampleUpvote.upvote);
+          expect(res.body.recipeID.toString()).to.equal(exampleUpvote.recipeID.toString());
+          expect(res.body.upvoteerProfileID.toString()).to.equal(exampleUpvote.upvoteerProfileID.toString());
           done();
         });
       });
     });
-    describe('without a valid comment id', () => {
+    describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
-        request.get(`${url}/api/comment/alskdjf`)
+        request.get(`${url}/api/upvote/alskdjf`)
         .end(err => {
           expect(err.status).to.equal(404);
           done();
@@ -167,29 +167,29 @@ describe('Comment Routes', () => {
       });
     });
   });
-  describe('GET /api/allcomments/:profileID', () => {
+  describe('GET /api/allupvotes/:profileID', () => {
     beforeEach(done => {
-      exampleComment.commenterProfileID = this.tempProfile._id;
-      exampleComment.recipeID = this.tempRecipe._id;
-      new ResComment(exampleComment).save()
-      .then(comment => {
-        this.tempComment = comment;
-        this.tempRecipe.comments.push(comment._id);
+      exampleUpvote.upvoteerProfileID = this.tempProfile._id;
+      exampleUpvote.recipeID = this.tempRecipe._id;
+      new Upvote(exampleUpvote).save()
+      .then(upvote => {
+        this.tempUpvote = upvote;
+        this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
-        this.tempProfile.comments.push(comment._id);
+        this.tempProfile.upvotes.push(upvote._id);
         this.tempProfile.save();
         done();
       })
       .catch(done);
     });
     describe('with a valid profile id', () => {
-      it('should return a list of comments', done => {
-        request.get(`${url}/api/allcomments/${this.tempProfile._id.toString()}`)
+      it('should return a list of upvotes', done => {
+        request.get(`${url}/api/allupvotes/${this.tempProfile._id.toString()}`)
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.comments[0].toString()).to.equal(this.tempComment._id.toString());
-          expect(res.body.comments.length).to.equal(1);
+          expect(res.body.upvotes[0].toString()).to.equal(this.tempUpvote._id.toString());
+          expect(res.body.upvotes.length).to.equal(1);
           expect(res.body._id.toString()).to.equal(this.tempProfile._id.toString());
           done();
         });
@@ -197,7 +197,7 @@ describe('Comment Routes', () => {
     });
     describe('without a valid user id', () => {
       it('should return a 404 error', done => {
-        request.get(`${url}/api/allcomments/alskdjf`)
+        request.get(`${url}/api/allupvotes/alskdjf`)
         .end(err => {
           expect(err.status).to.equal(404);
           done();
@@ -206,7 +206,7 @@ describe('Comment Routes', () => {
     });
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
-        request.get(`${url}/api/allcomments/n0taval1d1d00p5`)
+        request.get(`${url}/api/allupvotes/n0taval1d1d00p5`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .end((err, res) => {
           expect(err.status).to.equal(404);
@@ -215,29 +215,29 @@ describe('Comment Routes', () => {
       });
     });
   });
-  describe('GET /api/allrecipecomments/:recipeID', () => {
+  describe('GET /api/allrecipeupvotes/:recipeID', () => {
     beforeEach(done => {
-      exampleComment.commenterProfileID = this.tempProfile._id;
-      exampleComment.recipeID = this.tempRecipe._id;
-      new ResComment(exampleComment).save()
-      .then(comment => {
-        this.tempComment = comment;
-        this.tempRecipe.comments.push(comment._id);
+      exampleUpvote.upvoteerProfileID = this.tempProfile._id;
+      exampleUpvote.recipeID = this.tempRecipe._id;
+      new Upvote(exampleUpvote).save()
+      .then(upvote => {
+        this.tempUpvote = upvote;
+        this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
-        this.tempProfile.comments.push(comment._id);
+        this.tempProfile.upvotes.push(upvote._id);
         this.tempProfile.save();
         done();
       })
       .catch(done);
     });
     describe('with a valid recipe id', () => {
-      it('should return a list of comments', done => {
-        request.get(`${url}/api/allrecipecomments/${this.tempRecipe._id.toString()}`)
+      it('should return a list of upvotes', done => {
+        request.get(`${url}/api/allrecipeupvotes/${this.tempRecipe._id.toString()}`)
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.comments[0].toString()).to.equal(this.tempComment._id.toString());
-          expect(res.body.comments.length).to.equal(1);
+          expect(res.body.upvotes[0].toString()).to.equal(this.tempUpvote._id.toString());
+          expect(res.body.upvotes.length).to.equal(1);
           expect(res.body._id.toString()).to.equal(this.tempRecipe._id.toString());
           done();
         });
@@ -245,7 +245,7 @@ describe('Comment Routes', () => {
     });
     describe('without a valid user id', () => {
       it('should return a 404 error', done => {
-        request.get(`${url}/api/allrecipecomments/alskdjf`)
+        request.get(`${url}/api/allrecipeupvotes/alskdjf`)
         .end(err => {
           expect(err.status).to.equal(404);
           done();
@@ -254,7 +254,7 @@ describe('Comment Routes', () => {
     });
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
-        request.get(`${url}/api/allrecipecomments/n0taval1d1d00p5`)
+        request.get(`${url}/api/allrecipeupvotes/n0taval1d1d00p5`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .end((err, res) => {
           expect(err.status).to.equal(404);
@@ -263,36 +263,36 @@ describe('Comment Routes', () => {
       });
     });
   });
-  describe('PUT /api/comment/:id', () => {
+  describe('PUT /api/upvote/:id', () => {
     beforeEach(done => {
-      exampleComment.commenterProfileID = this.tempProfile._id;
-      exampleComment.recipeID = this.tempRecipe._id;
-      new ResComment(exampleComment).save()
-      .then(comment => {
-        this.tempComment = comment;
+      exampleUpvote.upvoteerProfileID = this.tempProfile._id;
+      exampleUpvote.recipeID = this.tempRecipe._id;
+      new Upvote(exampleUpvote).save()
+      .then(upvote => {
+        this.tempUpvote = upvote;
         done();
       })
       .catch(done);
     });
     const updated = {
-      comment: 'the updated comment content'
+      upvote: 'the updated upvote content'
     };
-    describe('with a valid comment id and body', () => {
+    describe('with a valid upvote id and body', () => {
       it('should return an updated recipe', done => {
-        request.put(`${url}/api/comment/${this.tempComment._id.toString()}`)
+        request.put(`${url}/api/upvote/${this.tempUpvote._id.toString()}`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .send(updated)
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.comment).to.equal(updated.comment);
+          expect(res.body.upvote).to.equal(updated.upvote);
           done();
         });
       });
     });
-    describe('without a valid comment id', () => {
+    describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
-        request.put(`${url}/api/comment/n0taval1d1d00p5`)
+        request.put(`${url}/api/upvote/n0taval1d1d00p5`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .send(updated)
         .end((err, res) => {
@@ -304,7 +304,7 @@ describe('Comment Routes', () => {
     });
     describe('without a valid body', () => {
       it('should return a 400 error', done => {
-        request.put(`${url}/api/comment/${this.tempComment._id}`)
+        request.put(`${url}/api/upvote/${this.tempUpvote._id}`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .end((err, res) => {
           expect(err.status).to.equal(400);
@@ -314,50 +314,50 @@ describe('Comment Routes', () => {
       });
     });
   });
-  describe('DELETE /api/comment/:id', () => {
+  describe('DELETE /api/upvote/:id', () => {
     beforeEach(done => {
-      exampleComment.commenterProfileID = this.tempProfile._id;
-      exampleComment.recipeID = this.tempRecipe._id;
-      new ResComment(exampleComment).save()
-      .then(comment => {
-        this.tempComment = comment;
-        this.tempRecipe.comments.push(comment._id);
+      exampleUpvote.upvoteerProfileID = this.tempProfile._id;
+      exampleUpvote.recipeID = this.tempRecipe._id;
+      new Upvote(exampleUpvote).save()
+      .then(upvote => {
+        this.tempUpvote = upvote;
+        this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
-        this.tempProfile.comments.push(comment._id);
+        this.tempProfile.upvotes.push(upvote._id);
         this.tempProfile.save();
         done();
       })
       .catch(done);
     });
-    describe('with a valid comment id', () => {
+    describe('with a valid upvote id', () => {
       it('should return a 204 status', done => {
-        request.delete(`${url}/api/comment/${this.tempComment._id.toString()}`)
+        request.delete(`${url}/api/upvote/${this.tempUpvote._id.toString()}`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
-          ResComment.findById(this.tempComment._id)
+          Upvote.findById(this.tempUpvote._id)
           .catch(err => {
             expect(err).to.be(404);
           });
           Profile.findById(this.tempProfile._id)
           .then(profile => {
             console.log('PROFILE IN DELETE', profile);
-            expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
+            expect(profile.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);
           })
           .catch(done);
           Recipe.findById(this.tempRecipe._id)
           .then(recipe => {
-            expect(recipe.comments.indexOf(this.tempComment._id)).to.equal(-1);
+            expect(recipe.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);
           })
           .catch(done);
           done();
         });
       });
     });
-    describe('without a valid comment id', () => {
+    describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
-        request.delete(`${url}/api/comment/n0taval1d1d00p5`)
+        request.delete(`${url}/api/upvote/n0taval1d1d00p5`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .end((err, res) => {
           expect(err.status).to.equal(404);
