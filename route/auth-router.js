@@ -29,7 +29,6 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   // why not json parser?
   debug('GET /api/signin');
   // whats goin on with the token
-  console.log('RRRRRRRRRRRRRRRRRREC', req.body);
   User.findOne({ username: req.auth.username})
   .then( user => {
     // console.log('djkasndkjasndkjaaaaaaaaaannnnnnnnnnnnnnnnnnn', user);
@@ -46,7 +45,15 @@ authRouter.put('/api/account', basicAuth, jsonParser, function(req, res, next) {
   if (!req._body) return next(createError(400, 'Expected request body')); 
   User.findOne({ username : req.auth.username})
   .then( user => user.comparePasswordHash(req.auth.password))
-  .then( user => User.findByIdAndUpdate(user._id, req.body, {new: true}))
+  .then( user => {
+    if(req.body.password) {
+      user.generatePasswordHash(req.body.password)
+      .then( user => req.body.password = user._id)
+      .catch(next);    }
+    User.findByIdAndUpdate(user._id, req.body, {new: true})
+    .then( user => res.json(user))
+    .catch( next);
+  })
   .catch(next);
 });
 authRouter.delete('/api/account', basicAuth, function(req, res, next) {

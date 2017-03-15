@@ -137,4 +137,71 @@ describe('Auth Routes', function(){
       });
     });
   });
+
+  describe('PUT /api/account', function(){
+    
+    beforeEach( done => {
+      let password  = exampleUser.password;
+      let user = new User(exampleUser);
+      user.generatePasswordHash(password)
+      .then( user => {
+        this.tempUser = user;
+        console.log('this.tempUser >>', this.tempUser);
+        return user.save();
+      })
+      .then( user => user.generateToken())
+      .then( () => done())
+      .catch(err => done(err));
+    });
+
+    afterEach( done => {
+      User.remove({})
+      .then( () => done())
+      .catch(done);
+    });
+
+    describe('with a valid body', () => {
+      it('The one that doesnt work ', done => {
+        let updated = {
+          password: 'updatedpassword',
+          email: 'updated email'
+        };
+
+        request.put(`${url}/api/account`)
+        .auth('test username','test password')
+        .send(updated)
+        .end((err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.email).to.be.equal(updated.email);
+          expect(res.body.username).to.equal(this.tempUser.username);
+          expect(res.body.password).to.not.equal(this.tempUser.password);
+          done();
+        });
+      });
+    });
+
+    describe('with a valid body and different and same password', () => {
+      it('should return a token', done => {
+        let updated = {
+          username: 'updated username',
+          email: 'updated email'
+        };
+
+        request.put(`${url}/api/account`)
+        .auth('test username','test password')
+        .send(updated)
+        .end((err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.email).to.be.equal(updated.email);
+          expect(res.body.username).to.equal(updated.username);
+          expect(res.body.password).to.equal(this.tempUser.password);
+          done();
+        });
+      });
+    });
+  });
+
+
 });
