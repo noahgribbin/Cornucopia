@@ -65,6 +65,15 @@ commentRouter.get('/api/allcomments/:profileID', function(req, res, next) {
   .catch(next);
 });
 
+commentRouter.get('/api/allrecipecomments/:recipeID', function(req, res, next) {
+  debug('GET: /api/allrecipecomments/:recipeID');
+
+  Recipe.findById(req.params.recipeID)
+  .populate('comment')
+  .then(comment => res.json(comment))
+  .catch(next);
+});
+
 commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/comment/:id');
 

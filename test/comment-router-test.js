@@ -205,7 +205,55 @@ describe('Comment Routes', () => {
     });
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
-        request.get(`${url}/api/comments/n0taval1d1d00p5`)
+        request.get(`${url}/api/allcomments/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
+  describe('GET /api/allrecipecomments/:recipeID', () => {
+    beforeEach(done => {
+      exampleComment.commenterProfileID = this.tempProfile._id;
+      exampleComment.recipeID = this.tempRecipe._id;
+      new ResComment(exampleComment).save()
+      .then(comment => {
+        this.tempComment = comment;
+        this.tempRecipe.comments.push(comment._id);
+        this.tempRecipe.save();
+        this.tempProfile.comments.push(comment._id);
+        this.tempProfile.save();
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid recipe id', () => {
+      it('should return a list of comments', done => {
+        request.get(`${url}/api/allrecipecomments/${this.tempRecipe._id.toString()}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.comments[0].toString()).to.equal(this.tempComment._id.toString());
+          expect(res.body.comments.length).to.equal(1);
+          expect(res.body._id.toString()).to.equal(this.tempRecipe._id.toString());
+          done();
+        });
+      });
+    });
+    describe('without a valid user id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/allrecipecomments/alskdjf`)
+        .end(err => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+    describe('without a valid recipe id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/allrecipecomments/n0taval1d1d00p5`)
         .set({ Authorization: `Bearer ${this.tempToken}`})
         .end((err, res) => {
           expect(err.status).to.equal(404);
