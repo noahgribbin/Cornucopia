@@ -14,10 +14,9 @@ const profileRouter = module.exports = Router();
 profileRouter.post('/api/profile', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/profile');
 
-  if (!req.body) return next(createError(400, 'request body expected'));
+  if (!req._body) return next(createError(400, 'request body expected'));
   if (!req.user) return next(createError(400, 'request user expected'));
   req.body.userID = req.user._id;
-
   new Profile(req.body).save()
   .then(profile => res.json(profile))
   .catch(next);
@@ -35,10 +34,7 @@ profileRouter.get('/api/profile/:id', bearerAuth, function(req, res, next) {
   debug('GET: /api/profile/:id');
 
   Profile.findById(req.params.id)
-  .then(profile => {
-    if (profile.userID.toString() !== req.user._id.toString()) return next(createError(401, 'invalid user'));
-    res.send(profile);
-  })
+  .then(profile => res.json(profile))
   .catch(next);
 });
 

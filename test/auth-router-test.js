@@ -7,6 +7,8 @@ const User = require('../model/user.js');
 
 require('../server.js');
 const url = `http://localhost:${process.env.PORT}`;
+// const url = `http://localhost:3003`;
+
 
 const exampleUser = {
   username: 'test username',
@@ -31,7 +33,6 @@ describe('Auth Routes', function(){
           if(err) return done(err);
           expect(res.status).to.equal(200);
           expect(res.text).to.be.a('string');
-          // expect(res.body.password)
           done();
         });
       });
