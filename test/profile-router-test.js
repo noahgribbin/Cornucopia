@@ -18,8 +18,10 @@ const exampleUser = {
 
 const exampleProfile = {
   name: 'example name',
+  
   profilePicURI: 'example uri'
 };
+
 
 describe('Profile Routes', () => {
   beforeEach( done => {
