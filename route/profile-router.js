@@ -10,7 +10,7 @@ const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
-const Comment = require('../model/comment.js');
+const ResComment = require('../model/comment.js');
 
 const profileRouter = module.exports = Router();
 
@@ -54,31 +54,10 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
 
 profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/profile/:id');
-  console.log('request', req.user);
-
-  Profile.findOne( {userID: req.user._id} )
-  .then( profile => {
-    let recipeArray = profile.recipes;
-
-    recipeArray.forEach( recipes => {
-      Recipe.findByIdAndRemove(recipes)
-      .catch(next);
-    });
-    return;
-  });
-
-  Profile.findOne( {userID: req.user._id} )
-  .then( profile => {
-    let commentArray = recipes.comments;
-
-    commentArray.forEach( comments => {
-      Comment.findByIdAndRemove(comments)
-       .catch(next);
-    });
-    return;
-  });
-
-  Profile.deleteOne( {userID: req.user._id} );  
-  User.deleteOne( {username: req.user.username} );    
-
+  Recipe.remove({ profileID:req.params.id})
+  .then(() => Recipe.remove({ commenterProfileID:req.params.id}))
+  .then(() => Profile.remove( {userID: req.user._id} ))
+  .then(() => User.remove( {username: req.user.username} ))
+  .then(() => res.status(204).send())
+  .catch(next);
 });

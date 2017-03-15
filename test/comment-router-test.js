@@ -342,7 +342,6 @@ describe('Comment Routes', () => {
           });
           Profile.findById(this.tempProfile._id)
           .then(profile => {
-            console.log('PROFILE IN DELETE', profile);
             expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
           })
           .catch(done);

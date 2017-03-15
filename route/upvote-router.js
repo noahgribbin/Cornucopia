@@ -342,7 +342,6 @@ describe('Upvote Routes', () => {
           });
           Profile.findById(this.tempProfile._id)
           .then(profile => {
-            console.log('PROFILE IN DELETE', profile);
             expect(profile.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);
           })
           .catch(done);
