@@ -31,7 +31,7 @@ profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
   .catch(next);
 });
 
-profileRouter.get('/api/profile/:id', bearerAuth, function(req, res, next) {
+profileRouter.get('/api/profile/:id', function(req, res, next) {
   debug('GET: /api/profile/:id');
 
   Profile.findById(req.params.id)
