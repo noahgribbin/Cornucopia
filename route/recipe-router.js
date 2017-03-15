@@ -49,9 +49,8 @@ recipeRouter.get('/api/allrecipes/:profileID', function(req, res, next) {
   debug('GET: /api/allrecipes/:profileID');
 
   Profile.findById(req.params.profileID)
-  .then(profile => {
-    res.json(profile.recipes);
-  })
+  .populate('recipes')
+  .then(profile => res.json(profile))
   .catch(next);
 });
 

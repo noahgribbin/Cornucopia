@@ -15,8 +15,8 @@ const recipeRouter = require('./route/recipe-router.js');
 
 dotenv.load();
 
-const PORT = 3003;
-// const PORT = process.env.PORT || 8000;
+// const PORT = 3003;
+const PORT = process.env.PORT || 8000;
 const app = express();
 
 mongoose.Promise = Promise;

@@ -7,8 +7,8 @@ const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+// const url = `http://localhost:3003`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -191,65 +191,65 @@ describe('Recipe Routes', () => {
       });
     });
   });
-  // describe('GET /api/allrecipes/:profileID', () => {
-  //   beforeEach( done => {
-  //     exampleRecipe.profileID = this.tempProfile._id.toString();
-  //     new Recipe(exampleRecipe).save()
-  //     .then(recipe => {
-  //       this.tempRecipe = recipe;
-  //       return recipe;
-  //     })
-  //     .then( recipe => {
-  //       let update = { recipes: this.tempProfile.recipes.push() }
-  //       return Profile.findByIdAndUpdate(recipe.profileID, update)
-  //     })
-  //     .then( recipe => {
-  //       console.log('RECIPE AT END OF BEFORE ACH', recipe);
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   afterEach( done => {
-  //     Recipe.remove({})
-  //     .then( () => {
-  //       delete exampleRecipe.profileID;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   })
-  //   describe('with a valid profile id', () => {
-  //     it('should return a list of recipes', done => {
-  //       request.get(`${url}/api/allrecipes/${this.tempProfile._id.toString()}`)
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(200);
-  //         expect(res.body[0]).to.equal(this.tempRecipe._id.toString());
-  //         expect(res.body.length).to.equal(1);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid user id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.get(`${url}/api/allrecipes/alskdjf`)
-  //       .end(err => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
-  //   describe('without a valid profile id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.get(`${url}/api/profile/n0taval1d1d00p5`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
+  describe('GET /api/allrecipes/:profileID', () => {
+    beforeEach(done => {
+      exampleRecipe.profileID = this.tempProfile._id;
+      new Recipe(exampleRecipe).save()
+      .then(recipe => {
+        this.tempRecipe = recipe;
+        this.tempProfile.recipes.push(this.tempRecipe._id);
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+      })
+      .then(profile => {
+        done();
+      })
+      .catch(done);
+    });
+    afterEach(done => {
+      Recipe.remove({})
+      .then( () => {
+        delete exampleRecipe.profileID;
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid profile id', () => {
+      it('should return a list of recipes', done => {
+        request.get(`${url}/api/allrecipes/${this.tempProfile._id.toString()}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.recipes[0]._id.toString()).to.equal(this.tempRecipe._id.toString());
+          expect(res.body.recipes[0].profileID.toString()).to.equal(this.tempRecipe.profileID.toString());
+          expect(res.body.recipes[0].categories.toString()).to.equal(this.tempRecipe.categories.toString());
+          expect(res.body.recipes[0].ingredients.toString()).to.equal(this.tempRecipe.ingredients.toString());
+          expect(res.body.recipes[0].instructions).to.equal(this.tempRecipe.instructions);
+          expect(res.body.recipes[0].picURI).to.equal(this.tempRecipe.picURI);
+          expect(res.body.recipes.length).to.equal(1);
+          done();
+        });
+      });
+    });
+    describe('without a valid user id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/allrecipes/alskdjf`)
+        .end(err => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+    describe('without a valid profile id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/profile/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
   describe('PUT /api/recipe/:id', () => {
     beforeEach(done => {
       exampleRecipe.profileID = this.tempProfile._id;
