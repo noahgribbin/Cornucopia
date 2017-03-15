@@ -40,18 +40,20 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   .catch(next);
 });
 
-authRouter.put('/api/account-settings', basicAuth, function(req, res, next) {
-  debug('PUT /api/signin');
+authRouter.put('/api/account', basicAuth, jsonParser, function(req, res, next) {
+  debug('PUT /api/account');
 
+  if (!req._body) return next(createError(400, 'Expected request body')); 
   User.findOne({ username : req.auth.username})
   .then( user => user.comparePasswordHash(req.auth.password))
   .then( user => User.findByIdAndUpdate(user._id, req.body, {new: true}))
   .catch(next);
 });
-authRouter.delete('/api/account-settings', basicAuth, function(req, res, next) {
-  debug('DELETE /api/account-settings');
+authRouter.delete('/api/account', basicAuth, function(req, res, next) {
+  debug('DELETE /api/account');
 
   User.findOne({username: res.auth.username})
+  .then( user => user.comparePasswordHash(req.auth.password))
   .then( user => User.findByIdAndRemove(user._id))
   .then( () => res.status(204).send('Deleted successfuly'))
   .catch(next);
