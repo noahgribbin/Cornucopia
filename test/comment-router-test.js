@@ -19,8 +19,8 @@ const exampleUser = {
 };
 
 const exampleProfile = {
-  name: 'example name',
-  profilePicURI: 'example uri'
+  name: 'comment example name',
+  profilePicURI: 'upvote example uri'
 };
 
 const exampleRecipe = {
@@ -116,7 +116,7 @@ describe('Comment Routes', () => {
         .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           expect(err.status).to.equal(400);
-          expect(res.text).to.equal('request body expected');
+          expect(res.text).to.equal('BadRequestError');
           done();
         });
       });
@@ -342,7 +342,6 @@ describe('Comment Routes', () => {
           });
           Profile.findById(this.tempProfile._id)
           .then(profile => {
-            console.log('PROFILE IN DELETE', profile);
             expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
           })
           .catch(done);

@@ -11,7 +11,6 @@ const basicAuth = require('../lib/basic-auth-middleware.js');
 const authRouter = module.exports = Router();
 
 authRouter.post('/api/signup', jsonParser, function(req, res, next) {
-  // why json parser?
   debug('POST /api/signup');
 
   let password = req.body.password;
@@ -26,13 +25,9 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 });
 
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
-  // why not json parser?
   debug('GET /api/signin');
-  // whats goin on with the token
-  console.log('RRRRRRRRRRRRRRRRRREC', req.body);
   User.findOne({ username: req.auth.username})
   .then( user => {
-    // console.log('djkasndkjasndkjaaaaaaaaaannnnnnnnnnnnnnnnnnn', user);
     return user.comparePasswordHash(req.auth.password);
   })
   .then( user => user.generateToken())

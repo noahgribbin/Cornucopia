@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('cornucopia:recipe-router');
+const debug = require('debug')('cornucopia:upvote-router');
 const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
@@ -16,7 +16,7 @@ const commentRouter = module.exports = Router();
 commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/comment/:recipeID');
 
-  if (!req._body) return next(createError(400, 'request body expected'));
+  if (!req.body) return next(createError(400, 'request body expected'));
   if (!req.user) return next(createError(400, 'request user expected'));
 
   req.body.recipeID = req.params.recipeID;
@@ -24,7 +24,7 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
   .then( profile => {
     req.body.commenterProfileID = profile._id;
     new ResComment(req.body).save()
-    .then(comment => {
+    .then( comment => {
       profile.comments.push(comment._id);
       profile.save();
       Recipe.findById(req.params.recipeID)
