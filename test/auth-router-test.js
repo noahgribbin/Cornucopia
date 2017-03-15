@@ -6,7 +6,9 @@ const request = require('superagent');
 const User = require('../model/user.js');
 
 require('../server.js');
+// const url = `http://localhost:3003`;
 const url = `http://localhost:${process.env.PORT}`;
+
 
 const exampleUser = {
   username: 'test username',

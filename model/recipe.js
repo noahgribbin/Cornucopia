@@ -5,10 +5,10 @@ const Schema = mongoose.Schema;
 
 const recipeSchema = Schema({
   profileID: { type: Schema.Types.ObjectId, required: true },
-  ingredients: { type: Array, required: true},
+  ingredients: [{ type: String, required: true}],
   instructions: { type: String, required: true },
   picURI: { type: String },
-  categories: { type: Array, required: true },
+  categories: [{ type: String, required: true }],
   created: { type: Date, default: Date.now }
 });
 

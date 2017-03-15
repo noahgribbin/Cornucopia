@@ -9,11 +9,13 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const errors = require('./lib/error-middleware.js');
 
-const recipeRouter = require('./route/recipe-router.js');
 const authRouter = require('./route/auth-router.js');
+const profileRouter = require('./route/profile-router.js');
+const recipeRouter = require('./route/recipe-router.js');
 
 dotenv.load();
 
+// const PORT = 3003;
 const PORT = process.env.PORT || 8000;
 const app = express();
 
@@ -24,9 +26,9 @@ mongoose.connect(process.env.MONGODB_URI);
 
 app.use(cors());
 app.use(morgan('dev'));
-
-// app.use(recipeRouter);
 app.use(authRouter);
+app.use(profileRouter);
+app.use(recipeRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {
