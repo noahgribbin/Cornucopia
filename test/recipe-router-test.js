@@ -120,33 +120,34 @@ describe('Recipe Routes', () => {
           expect(res.body.recipe.instructions).to.equal(exampleRecipe.instructions);
           expect(res.body.recipe.categories.toString()).to.equal(exampleRecipe.categories.toString());
           expect(res.body.recipe.picURI).to.equal(exampleRecipe.picURI);
+          expect(res.body.profile.recipes[0]).to.equal(res.body.recipe._id);
           expect(date).to.not.equal('invalid date');
           done();
         });
       });
     });
-  //   describe('with an invalid body', () => {
-  //     it('should return a 400 error', done => {
-  //       request.post(`${url}/api/profile`)
-  //       .set( { Authorization: `Bearer ${this.tempToken}` } )
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(400);
-  //         expect(res.text).to.equal('request body expected');
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('with an invalid token', () => {
-  //     it('should return 401 error', done => {
-  //       request.post(`${url}/api/profile`)
-  //       .send(exampleProfile)
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(401);
-  //         expect(res.text).to.equal('authorization header required');
-  //         done();
-  //       });
-  //     });
-  //   });
+    describe('with an invalid body', () => {
+      it('should return a 400 error', done => {
+        request.post(`${url}/api/profile`)
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
+        .end((err, res) => {
+          expect(err.status).to.equal(400);
+          expect(res.text).to.equal('request body expected');
+          done();
+        });
+      });
+    });
+    describe('with an invalid token', () => {
+      it('should return 401 error', done => {
+        request.post(`${url}/api/profile`)
+        .send(exampleProfile)
+        .end((err, res) => {
+          expect(err.status).to.equal(401);
+          expect(res.text).to.equal('authorization header required');
+          done();
+        });
+      });
+    });
   });
   describe('GET /api/recipe/:id', () => {
     beforeEach(done => {
@@ -190,29 +191,54 @@ describe('Recipe Routes', () => {
       });
     });
   });
-  describe('GET /api/allrecipes/:profileID', () => {
-    describe('with a valid profile id', () => {
-      it('should return a list of recipes', done => {
-        request.get(`${url}/api/allrecipes/${this.tempProfile._id.toString()}`)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.status).to.equal(200);
-          expect(res.body[0]).to.equal(this.tempRecipe._id.toString());
-          expect(res.body.length).to.equal(1);
-          done();
-        });
-      });
-    });
-    describe('without a valid user id', () => {
-      it('should return a 404 error', done => {
-        request.get(`${url}/api/allrecipes/alskdjf`)
-        .end(err => {
-          expect(err.status).to.equal(404);
-          done();
-        });
-      });
-    });
-  });
+  // describe('GET /api/allrecipes/:profileID', () => {
+  //   beforeEach( done => {
+  //     exampleRecipe.profileID = this.tempProfile._id.toString();
+  //     new Recipe(exampleRecipe).save()
+  //     .then(recipe => {
+  //       this.tempRecipe = recipe;
+  //       return recipe;
+  //     })
+  //     .then( recipe => {
+  //       let update = { recipes: this.tempProfile.recipes.push() }
+  //       return Profile.findByIdAndUpdate(recipe.profileID, update)
+  //     })
+  //     .then( recipe => {
+  //       console.log('RECIPE AT END OF BEFORE ACH', recipe);
+  //       done();
+  //     })
+  //     .catch(done);
+  //   });
+  //   afterEach( done => {
+  //     Recipe.remove({})
+  //     .then( () => {
+  //       delete exampleRecipe.profileID;
+  //       done();
+  //     })
+  //     .catch(done);
+  //   })
+  //   describe('with a valid profile id', () => {
+  //     it('should return a list of recipes', done => {
+  //       request.get(`${url}/api/allrecipes/${this.tempProfile._id.toString()}`)
+  //       .end((err, res) => {
+  //         if (err) return done(err);
+  //         expect(res.status).to.equal(200);
+  //         expect(res.body[0]).to.equal(this.tempRecipe._id.toString());
+  //         expect(res.body.length).to.equal(1);
+  //         done();
+  //       });
+  //     });
+  //   });
+  //   describe('without a valid user id', () => {
+  //     it('should return a 404 error', done => {
+  //       request.get(`${url}/api/allrecipes/alskdjf`)
+  //       .end(err => {
+  //         expect(err.status).to.equal(404);
+  //         done();
+  //       });
+  //     });
+  //   });
+  // });
   //   describe('without a valid profile id', () => {
   //     it('should return a 404 error', done => {
   //       request.get(`${url}/api/profile/n0taval1d1d00p5`)
@@ -276,35 +302,53 @@ describe('Recipe Routes', () => {
   //     });
   //   });
   // });
-  // describe('DELETE /api/profile/:id', () => {
-  //   before(done => {
-  //     exampleProfile.userID = this.tempUser._id.toString();
-  //     new Profile(exampleProfile).save()
-  //     .then( profile => {
-  //       this.tempProfile = profile;
-  //       done();
-  //     })
-  //     .catch(err => done(err));
-  //   });
-  //   describe('with a valid profile id', () => {
-  //     it('should return a 204 status', done => {
-  //       request.delete(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(204);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid profile id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.delete(`${url}/api/profile/n0taval1d1d00p5`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
+  describe('DELETE /api/recipe/:id', () => {
+    beforeEach(done => {
+      exampleRecipe.profileID = this.tempProfile._id;
+      new Recipe(exampleRecipe).save()
+      .then(recipe => {
+        this.tempRecipe = recipe;
+        this.tempProfile.recipes.push(this.tempRecipe._id);
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+      })
+      .then(profile => {
+        done();
+      })
+      .catch(done);
+    });
+    afterEach(done => {
+      Recipe.remove({})
+      .then( () => {
+        delete exampleRecipe.profileID;
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid recipe id', () => {
+      it('should return a 204 status', done => {
+        request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(204);
+          Profile.findById(this.tempProfile._id)
+          .then(profile => {
+            expect(profile.recipes.indexOf(this.tempRecipe._id)).to.equal(-1);
+            done();
+          })
+          .catch(done);
+        });
+      });
+    });
+    describe('without a valid recipe id', () => {
+      it('should return a 404 error', done => {
+        request.delete(`${url}/api/profile/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
 });
