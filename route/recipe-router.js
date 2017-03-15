@@ -60,10 +60,8 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
 
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {
-    console.log('PROFILE IN FIND OENE', profile);
     let recipeArray = profile.recipes;
     let recipeIndex = recipeArray.indexOf(req.params.id);
-    console.log('RECIPE INDEX', recipeIndex);
     if (recipeIndex === -1) return next(createError(404, 'not found'));
     recipeArray.splice(recipeIndex, 1);
     profile.recipes = recipeArray;
@@ -75,12 +73,14 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
   })
   .catch(next);
 });
-//
-// recipeRouter.put('/api/recipe/:id', bearerAuth, jsonParser, function(req, res, next) {
-//   debug('PUT: /api/recipe/:id');
-//
-//   if(req._body !== true) return next(createError(400, 'nothing to update'));
-//   Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
-//   .then( recipe => res.json(recipe))
-//   .catch(next);
-// });
+
+recipeRouter.put('/api/recipe/:id', bearerAuth, jsonParser, function(req, res, next) {
+  debug('PUT: /api/recipe/:id');
+
+  if(req._body !== true) return next(createError(400, 'nothing to update'));
+  Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  .then( recipe => {
+    res.json(recipe);
+  })
+  .catch(next);
+});

@@ -250,58 +250,67 @@ describe('Recipe Routes', () => {
   //     });
   //   });
   // });
-  // describe('PUT /api/profile/:id', () => {
-  //   before(done => {
-  //     exampleProfile.userID = this.tempUser._id.toString();
-  //     new Profile(exampleProfile).save()
-  //     .then( profile => {
-  //       this.tempProfile = profile;
-  //       done();
-  //     })
-  //     .catch(err => done(err));
-  //   });
-  //   const updated = {
-  //     name: 'updated name',
-  //     profilePicURI: 'updated profile image url'
-  //   };
-  //   describe('with a valid profile id and body', () => {
-  //     it('should return an updated profile', done => {
-  //       request.put(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .send(updated)
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(200);
-  //         expect(res.body.name).to.equal(updated.name);
-  //         expect(res.body.profilePicURI).to.equal(updated.profilePicURI);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid profile id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.put(`${url}/api/profile/n0taval1d1d00p5`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .send(updated)
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(404);
-  //         expect(res.text).to.equal('NotFoundError');
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid body', () => {
-  //     it('should return a 400 error', done => {
-  //       request.put(`${url}/api/profile/${this.tempProfile._id}`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(400);
-  //         expect(res.text).to.equal('nothing to update');
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
+  describe('PUT /api/recipe/:id', () => {
+    beforeEach(done => {
+      exampleRecipe.profileID = this.tempProfile._id;
+      new Recipe(exampleRecipe).save()
+      .then(recipe => {
+        this.tempRecipe = recipe;
+        done();
+      })
+      .catch(done);
+    });
+    afterEach(done => {
+      Recipe.remove({})
+      .then( () => {
+        delete exampleRecipe.profileID;
+        done();
+      })
+      .catch(done);
+    })
+    const updated = {
+      ingredients: ['updated ingredient 1', 'updated ingredient 2', 'updated ingredient 3'],
+      instructions: 'updated instructions'
+    };
+    describe('with a valid recipe id and body', () => {
+      it('should return an updated recipe', done => {
+        request.put(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .send(updated)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.ingredients.toString()).to.equal(updated.ingredients.toString());
+          expect(res.body.instructions).to.equal(updated.instructions);
+          expect(res.body.picURI).to.equal(exampleRecipe.picURI);
+          done();
+        });
+      });
+    });
+    describe('without a valid recipe id', () => {
+      it('should return a 404 error', done => {
+        request.put(`${url}/api/recipe/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .send(updated)
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          expect(res.text).to.equal('NotFoundError');
+          done();
+        });
+      });
+    });
+    describe('without a valid body', () => {
+      it('should return a 400 error', done => {
+        request.put(`${url}/api/recipe/${this.tempRecipe._id}`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(400);
+          expect(res.text).to.equal('nothing to update');
+          done();
+        });
+      });
+    });
+  });
   describe('DELETE /api/recipe/:id', () => {
     beforeEach(done => {
       exampleRecipe.profileID = this.tempProfile._id;
