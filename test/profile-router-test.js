@@ -18,8 +18,17 @@ const exampleUser = {
 
 const exampleProfile = {
   name: 'example name',
-  
+  recipes: [''],
+  comments: [''],
   profilePicURI: 'example uri'
+};
+
+const exampleComment = {
+
+};
+
+const exampleRecipe = {
+  
 };
 
 

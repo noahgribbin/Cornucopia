@@ -69,7 +69,7 @@ profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
 
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {
-    let commentArray = profile.comments;
+    let commentArray = recipes.comments;
 
     commentArray.forEach( comments => {
       Comment.findByIdAndRemove(comments)
