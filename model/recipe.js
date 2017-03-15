@@ -9,6 +9,7 @@ const recipeSchema = Schema({
   instructions: { type: String, required: true },
   picURI: { type: String },
   categories: [{ type: String, required: true }],
+  comments: [{ type: Schema.Types.ObjectId , ref: 'comment'}],
   created: { type: Date, default: Date.now }
 });
 
