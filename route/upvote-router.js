@@ -1,12 +1,12 @@
 'use strict';
 
 const debug = require('debug')('cornucopia:upvote-router');
+const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
 const Router = require('express').Router;
 
-const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const Recipe = require('../model/recipe.js');
 const Upvote = require('../model/upvote.js');
@@ -22,7 +22,7 @@ upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req,
   req.body.recipeID = req.params.recipeID;
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {
-    req.body.upvoteerProfileID = profile._id;
+    req.body.voterProfileID = profile._id;
     new Upvote(req.body).save()
     .then( upvote => {
       profile.upvotes.push(upvote._id);
@@ -34,7 +34,7 @@ upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req,
         return recipe;
       })
       .then(recipe => {
-        Profile.findById(upvote.upvoteerProfileID)
+        Profile.findById(upvote.voterProfileID)
         .then(profile => {
           let response = { profile: profile, recipe: recipe, upvote: upvote };
           res.json(response);
@@ -79,7 +79,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
 
   Upvote.findById(req.params.id)
   .then(upvote => {
-    Profile.findById(upvote.upvoteerProfileID)
+    Profile.findById(upvote.voterProfileID)
     .then( profile => {
       let upvoteArray = profile.upvotes;
       let upvoteIndex = upvoteArray.indexOf(upvote._id);
