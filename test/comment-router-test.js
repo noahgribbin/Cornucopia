@@ -9,8 +9,7 @@ const ResComment = require('../model/comment.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -19,8 +18,8 @@ const exampleUser = {
 };
 
 const exampleProfile = {
-  name: 'example name',
-  profilePicURI: 'example uri'
+  name: 'comment example name',
+  profilePicURI: 'upvote example uri'
 };
 
 const exampleRecipe = {
@@ -116,7 +115,7 @@ describe('Comment Routes', () => {
         .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           expect(err.status).to.equal(400);
-          expect(res.text).to.equal('request body expected');
+          expect(res.text).to.equal('BadRequestError');
           done();
         });
       });
