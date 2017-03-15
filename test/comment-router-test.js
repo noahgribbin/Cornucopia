@@ -233,67 +233,57 @@ describe('Comment Routes', () => {
   //     });
   //   });
   // });
-  // describe('PUT /api/recipe/:id', () => {
-  //   beforeEach(done => {
-  //     exampleRecipe.profileID = this.tempProfile._id;
-  //     new Recipe(exampleRecipe).save()
-  //     .then(recipe => {
-  //       this.tempRecipe = recipe;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   afterEach(done => {
-  //     Recipe.remove({})
-  //     .then( () => {
-  //       delete exampleRecipe.profileID;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   })
-  //   const updated = {
-  //     ingredients: ['updated ingredient 1', 'updated ingredient 2', 'updated ingredient 3'],
-  //     instructions: 'updated instructions'
-  //   };
-  //   describe('with a valid recipe id and body', () => {
-  //     it('should return an updated recipe', done => {
-  //       request.put(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .send(updated)
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(200);
-  //         expect(res.body.ingredients.toString()).to.equal(updated.ingredients.toString());
-  //         expect(res.body.instructions).to.equal(updated.instructions);
-  //         expect(res.body.picURI).to.equal(exampleRecipe.picURI);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid recipe id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.put(`${url}/api/recipe/n0taval1d1d00p5`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .send(updated)
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(404);
-  //         expect(res.text).to.equal('NotFoundError');
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid body', () => {
-  //     it('should return a 400 error', done => {
-  //       request.put(`${url}/api/recipe/${this.tempRecipe._id}`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(400);
-  //         expect(res.text).to.equal('nothing to update');
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
+  describe('PUT /api/comment/:id', () => {
+    beforeEach(done => {
+      exampleComment.commenterProfileID = this.tempProfile._id;
+      exampleComment.recipeID = this.tempRecipe._id;
+      new ResComment(exampleComment).save()
+      .then(comment => {
+        this.tempComment = comment;
+        done();
+      })
+      .catch(done);
+    });
+    const updated = {
+      comment: 'the updated comment content'
+    };
+    describe('with a valid comment id and body', () => {
+      it('should return an updated recipe', done => {
+        request.put(`${url}/api/comment/${this.tempComment._id.toString()}`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .send(updated)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.comment).to.equal(updated.comment);
+          done();
+        });
+      });
+    });
+    describe('without a valid comment id', () => {
+      it('should return a 404 error', done => {
+        request.put(`${url}/api/comment/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .send(updated)
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          expect(res.text).to.equal('NotFoundError');
+          done();
+        });
+      });
+    });
+    describe('without a valid body', () => {
+      it('should return a 400 error', done => {
+        request.put(`${url}/api/comment/${this.tempComment._id}`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(400);
+          expect(res.text).to.equal('nothing to update');
+          done();
+        });
+      });
+    });
+  });
   // describe('DELETE /api/recipe/:id', () => {
   //   beforeEach(done => {
   //     exampleRecipe.profileID = this.tempProfile._id;

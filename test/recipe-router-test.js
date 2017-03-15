@@ -30,40 +30,6 @@
 //
 //
 // describe('Recipe Routes', () => {
-//   // beforeEach( done => {
-//   //   let password = exampleUser.password;
-//   //   new User(exampleUser)
-//   //   .generatePasswordHash(exampleUser.password)
-//   //   .then( user => user.save())
-//   //   .then( user => {
-//   //     this.tempUser = user;
-//   //     return user.generateToken();
-//   //   })
-//   //   .then(token => {
-//   //     this.tempToken = token;
-//   //     return;
-//   //   })
-//   //   .then( () => {
-//   //     exampleProfile.userID = this.tempUser._id.toString();
-//   //     new Profile(exampleProfile).save()
-//   //     .then( profile => {
-//   //       this.tempProfile = profile;
-//   //       done();
-//   //     })
-//   //   })
-//   //   .catch( err => done(err));
-//   // });
-//   // beforeEach( done => {
-//   //   console.log('in second beforeEach')
-//   //   exampleProfile.userID = this.tempUser._id.toString();
-//   //   new Profile(exampleProfile).save()
-//   //   .then( profile => {
-//   //     this.tempProfile = profile;
-//   //     console.log('this temp profile in before each', this.tempProfile);
-//   //     done();
-//   //   })
-//   //   .catch( err => done(err));
-//   // });
 //   beforeEach( done => {
 //     let password = exampleUser.password;
 //     new User(exampleUser)

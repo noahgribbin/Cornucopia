@@ -37,7 +37,6 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
         Profile.findById(comment.commenterProfileID)
         .then(profile => {
           let response = { profile: profile, recipe: recipe, comment: comment };
-          console.log('RESPONSE ^^^^^^^^^^^^^^^^^^^^^^^^^', response);
           res.json(response);
         })
         .catch(next);
@@ -85,13 +84,11 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
 //   .catch(next);
 // });
 //
-// commentRouter.put('/api/comment/:id', bearerAuth, jsonParser, function(req, res, next) {
-//   debug('PUT: /api/comment/:id');
-//
-//   if(req._body !== true) return next(createError(400, 'nothing to update'));
-//   Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
-//   .then( recipe => {
-//     res.json(recipe);
-//   })
-//   .catch(next);
-// });
+commentRouter.put('/api/comment/:id', bearerAuth, jsonParser, function(req, res, next) {
+  debug('PUT: /api/comment/:id');
+
+  if (req._body !== true) return next(createError(400, 'nothing to update'));
+  ResComment.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  .then( comment => res.json(comment))
+  .catch(next);
+});
