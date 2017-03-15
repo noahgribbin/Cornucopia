@@ -1,39 +1,39 @@
 // 'use strict';
-//
+
 // const expect = require('chai').expect;
 // const request = require('superagent');
 // const Profile = require('../model/profile.js');
 // const User = require('../model/user.js');
 // const Recipe = require('../model/recipe.js');
 // const Upvote = require('../model/upvote.js');
-//
+
 // require('../server.js');
-//
+
 // const url = `http://localhost:3003`;
 // // const url = `http://localhost:${process.env.PORT}`;
-//
+
 // const exampleUser = {
 //   username: 'testusername',
 //   password: 'lalala',
 //   email: 'example@example.com'
 // };
-//
+
 // const exampleProfile = {
 //   name: 'example name',
 //   profilePicURI: 'example uri'
 // };
-//
+
 // const exampleRecipe = {
 //   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
 //   instructions: 'example recipe instructions',
 //   picURI: 'example recipe picURI',
 //   categories: ['example cat 1', 'example cat 2']
 // };
-//
+
 // const exampleUpvote = {
 //   upvote: 'example upvote'
 // };
-//
+
 // describe('Upvote Routes', () => {
 //   beforeEach( done => {
 //     let password = exampleUser.password;

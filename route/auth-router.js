@@ -56,12 +56,3 @@ authRouter.put('/api/account', basicAuth, jsonParser, function(req, res, next) {
   })
   .catch(next);
 });
-authRouter.delete('/api/account', basicAuth, function(req, res, next) {
-  debug('DELETE /api/account');
-
-  User.findOne({username: res.auth.username})
-  .then( user => user.comparePasswordHash(req.auth.password))
-  .then( user => User.findByIdAndRemove(user._id))
-  .then( () => res.status(204).send('Deleted successfuly'))
-  .catch(next);
-});
