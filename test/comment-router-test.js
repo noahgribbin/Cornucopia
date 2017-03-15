@@ -166,65 +166,54 @@ describe('Comment Routes', () => {
       });
     });
   });
-  // describe('GET /api/allrecipes/:profileID', () => {
-  //   beforeEach(done => {
-  //     exampleRecipe.profileID = this.tempProfile._id;
-  //     new Recipe(exampleRecipe).save()
-  //     .then(recipe => {
-  //       this.tempRecipe = recipe;
-  //       this.tempProfile.recipes.push(this.tempRecipe._id);
-  //       return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
-  //     })
-  //     .then(profile => {
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   afterEach(done => {
-  //     Recipe.remove({})
-  //     .then( () => {
-  //       delete exampleRecipe.profileID;
-  //       done();
-  //     })
-  //     .catch(done);
-  //   });
-  //   describe('with a valid profile id', () => {
-  //     it('should return a list of recipes', done => {
-  //       request.get(`${url}/api/allrecipes/${this.tempProfile._id.toString()}`)
-  //       .end((err, res) => {
-  //         if (err) return done(err);
-  //         expect(res.status).to.equal(200);
-  //         expect(res.body.recipes[0]._id.toString()).to.equal(this.tempRecipe._id.toString());
-  //         expect(res.body.recipes[0].profileID.toString()).to.equal(this.tempRecipe.profileID.toString());
-  //         expect(res.body.recipes[0].categories.toString()).to.equal(this.tempRecipe.categories.toString());
-  //         expect(res.body.recipes[0].ingredients.toString()).to.equal(this.tempRecipe.ingredients.toString());
-  //         expect(res.body.recipes[0].instructions).to.equal(this.tempRecipe.instructions);
-  //         expect(res.body.recipes[0].picURI).to.equal(this.tempRecipe.picURI);
-  //         expect(res.body.recipes.length).to.equal(1);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid user id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.get(`${url}/api/allrecipes/alskdjf`)
-  //       .end(err => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
-  //   describe('without a valid profile id', () => {
-  //     it('should return a 404 error', done => {
-  //       request.get(`${url}/api/profile/n0taval1d1d00p5`)
-  //       .set({ Authorization: `Bearer ${this.tempToken}`})
-  //       .end((err, res) => {
-  //         expect(err.status).to.equal(404);
-  //         done();
-  //       });
-  //     });
-  //   });
-  // });
+  describe('GET /api/allcomments/:profileID', () => {
+    beforeEach(done => {
+      exampleComment.commenterProfileID = this.tempProfile._id;
+      exampleComment.recipeID = this.tempRecipe._id;
+      new ResComment(exampleComment).save()
+      .then(comment => {
+        this.tempComment = comment;
+        this.tempRecipe.comments.push(comment._id);
+        this.tempRecipe.save();
+        this.tempProfile.comments.push(comment._id);
+        this.tempProfile.save();
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid profile id', () => {
+      it('should return a list of comments', done => {
+        request.get(`${url}/api/allcomments/${this.tempProfile._id.toString()}`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.comments[0].toString()).to.equal(this.tempComment._id.toString());
+          expect(res.body.comments.length).to.equal(1);
+          expect(res.body._id.toString()).to.equal(this.tempProfile._id.toString());
+          done();
+        });
+      });
+    });
+    describe('without a valid user id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/allcomments/alskdjf`)
+        .end(err => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+    describe('without a valid profile id', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/comments/n0taval1d1d00p5`)
+        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
   describe('PUT /api/comment/:id', () => {
     beforeEach(done => {
       exampleComment.commenterProfileID = this.tempProfile._id;

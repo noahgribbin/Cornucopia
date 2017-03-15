@@ -56,15 +56,15 @@ commentRouter.get('/api/comment/:id', function(req, res, next) {
   .catch(next);
 });
 
-// commentRouter.get('/api/allrecipes/:profileID', function(req, res, next) {
-//   debug('GET: /api/allrecipes/:profileID');
-//
-//   Profile.findById(req.params.profileID)
-//   .populate('recipes')
-//   .then(profile => res.json(profile))
-//   .catch(next);
-// });
-//
+commentRouter.get('/api/allcomments/:profileID', function(req, res, next) {
+  debug('GET: /api/allcomments/:profileID');
+
+  Profile.findById(req.params.profileID)
+  .populate('comment')
+  .then(comment => res.json(comment))
+  .catch(next);
+});
+
 commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/comment/:id');
 
