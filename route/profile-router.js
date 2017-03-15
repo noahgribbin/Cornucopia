@@ -9,6 +9,8 @@ const jsonParser = require('body-parser').json();
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
+const Recipe = require('../model/recipe.js');
+const ResComment = require('../model/comment.js');
 
 const profileRouter = module.exports = Router();
 
@@ -23,18 +25,19 @@ profileRouter.post('/api/profile', bearerAuth, jsonParser, function(req, res, ne
   .catch(next);
 });
 
-profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
-  debug('DELETE: /api/profile/:id');
-
-  Profile.findByIdAndRemove(req.params.id)
-  .then( () => res.status(204).send())
-  .catch(next);
-});
-
 profileRouter.get('/api/profile/:id', function(req, res, next) {
   debug('GET: /api/profile/:id');
 
   Profile.findById(req.params.id)
+  .then(profile => res.json(profile))
+  .catch(next);
+});
+
+profileRouter.get('/api/profile/:id/allprofiles', function(req, res, next) {
+  debug('GET: /api/profile/:id/allprofiles');
+
+  Profile.findById(req.params.allprofiles)
+  .populate('profile')
   .then(profile => res.json(profile))
   .catch(next);
 });
@@ -47,4 +50,14 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
   Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then(profile => res.json(profile))
     .catch(next);
+});
+
+profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
+  debug('DELETE: /api/profile/:id');
+  Recipe.remove({ profileID:req.params.id})
+  .then(() => Recipe.remove({ commenterProfileID:req.params.id}))
+  .then(() => Profile.remove( {userID: req.user._id} ))
+  .then(() => User.remove( {username: req.user.username} ))
+  .then(() => res.status(204).send())
+  .catch(next);
 });
