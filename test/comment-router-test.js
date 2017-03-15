@@ -148,7 +148,6 @@ describe('Comment Routes', () => {
         request.get(`${url}/api/comment/${this.tempComment._id.toString()}`)
         .end((err, res) => {
           if (err) return done(err);
-          let date =
           expect(res.status).to.equal(200);
           expect(res.body.comment).to.equal(exampleComment.comment);
           expect(res.body.recipeID.toString()).to.equal(exampleComment.recipeID.toString());
@@ -305,16 +304,14 @@ describe('Comment Routes', () => {
           });
           Profile.findById(this.tempProfile._id)
           .then(profile => {
-            console.log('PROFILE COMMENTS IN TEST', profile.comments);
             expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
           })
           .catch(done);
-          // Recipe.findById(this.tempRecipe._id)
-          // .then(recipe => {
-          //   expect(recipe.comments.indexOf(this.tempComment._id)).to.equal(-1);
-          //   done();
-          // })
-          // .catch(done);
+          Recipe.findById(this.tempRecipe._id)
+          .then(recipe => {
+            expect(recipe.comments.indexOf(this.tempComment._id)).to.equal(-1);
+          })
+          .catch(done);
           done();
         });
       });

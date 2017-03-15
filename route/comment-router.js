@@ -68,34 +68,37 @@ commentRouter.get('/api/comment/:id', function(req, res, next) {
 commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/comment/:id');
 
-  Profile.findOne( {userID: req.user._id} )
-  .then( profile => {
-    let commentArray = profile.comments;
-    let commentIndex = commentArray.indexOf(req.params.id);
-    if (commentIndex === -1) return next(createError(404, 'not found'));
-    commentArray.splice(commentIndex, 1);
-    profile.comments = commentArray;
-    Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
-  })
-  .catch(next);
-
   ResComment.findById(req.params.id)
-  .then( comment => {
-    Recipe.findById(comment.recipeID)
-    .then( recipe => {
-      let commentArray = recipe.comments;
+  .then(comment => {
+    Profile.findById(comment.commenterProfileID)
+    .then( profile => {
+      let commentArray = profile.comments;
       let commentIndex = commentArray.indexOf(comment._id);
       if (commentIndex === -1) return next(createError(404, 'not found'));
       commentArray.splice(commentIndex, 1);
+      profile.comments = commentArray;
+      Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+      .catch(next);
+      return comment;
+    })
+    .then( comment => Recipe.findById(comment.recipeID))
+    .then( recipe => {
+
+      let commentArray = recipe.comments;
+      let commentIndex = commentArray.indexOf(comment._id);
+      if (commentIndex === -1) return next(createError(404, 'not found'));
+
+      commentArray.splice(commentIndex, 1);
       recipe.comments = commentArray;
+
       Recipe.findByIdAndUpdate( recipe._id, recipe, { new: true} )
+      .then( () => ResComment.findByIdAndRemove(comment._id))
+      .then( () => {
+        res.status(204).send();
+      })
+      .catch(next);
     })
     .catch(next);
-    return comment;
-  })
-  .then(comment => {
-    ResComment.findByIdAndRemove(comment._id);
-    res.status(204).send();
   })
   .catch(next);
 });
