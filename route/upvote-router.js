@@ -16,15 +16,15 @@ const upvoteRouter = module.exports = Router();
 upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/upvote/:recipeID');
 
-  if (!req._body) return next(createError(400, 'request body expected'));
+  if (!req.body) return next(createError(400, 'request body expected'));
   if (!req.user) return next(createError(400, 'request user expected'));
 
   req.body.recipeID = req.params.recipeID;
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {
-    req.body.upvoterProfileID = profile._id;
+    req.body.upvoteerProfileID = profile._id;
     new Upvote(req.body).save()
-    .then(upvote => {
+    .then( upvote => {
       profile.upvotes.push(upvote._id);
       profile.save();
       Recipe.findById(req.params.recipeID)
@@ -34,7 +34,7 @@ upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req,
         return recipe;
       })
       .then(recipe => {
-        Profile.findById(upvote.upvoterProfileID)
+        Profile.findById(upvote.upvoteerProfileID)
         .then(profile => {
           let response = { profile: profile, recipe: recipe, upvote: upvote };
           res.json(response);
@@ -79,7 +79,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
 
   Upvote.findById(req.params.id)
   .then(upvote => {
-    Profile.findById(upvote.upvoterProfileID)
+    Profile.findById(upvote.upvoteerProfileID)
     .then( profile => {
       let upvoteArray = profile.upvotes;
       let upvoteIndex = upvoteArray.indexOf(upvote._id);

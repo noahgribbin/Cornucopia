@@ -116,7 +116,7 @@
 //         .set( { Authorization: `Bearer ${this.tempToken}` } )
 //         .end((err, res) => {
 //           expect(err.status).to.equal(400);
-//           expect(res.text).to.equal('request body expected');
+//           expect(res.text).to.equal('BadRequestError');
 //           done();
 //         });
 //       });
