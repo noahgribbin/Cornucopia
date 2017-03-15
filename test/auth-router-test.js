@@ -157,6 +157,9 @@ describe('Auth Routes', function(){
         .auth(exampleUser.username, badUser.password)
         .end((err, res) => {
           expect(res.status).to.equal(401);
+          expect(res.text).to.equal('Wrong password!');
+          expect(res.res.statusMessage).to.equal('Unauthorized');
+          console.log(res);
           expect(res.text).to.be.a('string');
           done();
         });
