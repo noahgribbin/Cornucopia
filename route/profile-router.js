@@ -39,6 +39,15 @@ profileRouter.get('/api/profile/:id', function(req, res, next) {
   .catch(next);
 });
 
+profileRouter.get('/api/profile/:id/allprofiles', function(req, res, next) {
+  debug('GET: /api/profile/:id/allprofiles');
+
+  Profile.findById(req.params.allprofiles)
+  .populate('profile')
+  .then(profile => res.json(profile))
+  .catch(next);
+});
+
 profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res, next) {
   debug('PUT: /api/profile/:id');
 
@@ -47,4 +56,26 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
   Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then(profile => res.json(profile))
     .catch(next);
+});
+
+profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
+  debug('DELETE: /api/profile/:id');
+
+  Profile.findOne( {userID: req.user._id} )
+  .then( profile => {
+    let recipeArray = profile.recipes;
+
+    recipeArray.forEach(
+      Recipe.findByIdAndRemove(req.params.id);
+    )
+  })
+  .then( profile => {
+    let commentArray = profile.comments;
+
+     commentArray.forEach(
+       Comment.findByIdAndRemove(req.params.id);
+     )
+   })
+
+
 });
