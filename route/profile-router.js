@@ -34,10 +34,7 @@ profileRouter.get('/api/profile/:id', bearerAuth, function(req, res, next) {
   debug('GET: /api/profile/:id');
 
   Profile.findById(req.params.id)
-  .then(profile => {
-    if (profile.userID.toString() !== req.user._id.toString()) return next(createError(401, 'invalid user'));
-    res.send(profile);
-  })
+  .then(profile => res.json(profile))
   .catch(next);
 });
 
