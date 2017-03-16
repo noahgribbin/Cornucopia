@@ -285,11 +285,7 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-<<<<<<< HEAD
-        return Profile.findByIdAndUpdate(this.tempProfile._id, { $set {recipes: this.tempProfile.recipes } }, { new: true } );
-=======
         return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: {recipes: this.tempProfile.recipes } }, { new: true } );
->>>>>>> 5f2d8f2e2fe7ba6cf24bb4d990a762bdc97739c5
       })
       .then( () => done())
       .catch(done);
