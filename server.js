@@ -17,7 +17,8 @@ const upvoteRouter = require('./route/upvote-router.js');
 
 dotenv.load();
 
-const PORT = process.env.PORT || 8000;
+const PORT = 3003;
+// process.env.PORT || 8000;
 const app = express();
 
 mongoose.Promise = Promise;

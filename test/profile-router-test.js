@@ -9,7 +9,8 @@ const ResComment = require('../model/comment.js');
 
 require('../server.js');
 
-const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:3003`;
+// ${process.env.PORT};
 
 const exampleUser = {
   username: 'testusername',
@@ -44,7 +45,7 @@ describe('Profile Routes', () => {
       this.tempUser = user;
       return user.generateToken();
     })
-    .then(token => {
+    .then( token => {
       this.tempToken = token;
       done();
     })
@@ -102,7 +103,7 @@ describe('Profile Routes', () => {
     });
   });
   describe('GET /api/profile/:id', () => {
-    before(done => {
+    before( done => {
       exampleProfile.userID = this.tempUser._id.toString();
       new Profile(exampleProfile).save()
       .then( profile => {
@@ -114,7 +115,7 @@ describe('Profile Routes', () => {
     describe('with a valid profile id', () => {
       it('should return a profile', done => {
         request.get(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
@@ -127,7 +128,7 @@ describe('Profile Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/profile/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           expect(err.status).to.equal(404);
           done();
@@ -136,14 +137,14 @@ describe('Profile Routes', () => {
     });
   });
   describe('PUT /api/profile/:id', () => {
-    before(done => {
+    before( done => {
       exampleProfile.userID = this.tempUser._id.toString();
       new Profile(exampleProfile).save()
       .then( profile => {
         this.tempProfile = profile;
         done();
       })
-      .catch(err => done(err));
+      .catch( err => done(err));
     });
     const updated = {
       name: 'updated name',
@@ -152,7 +153,7 @@ describe('Profile Routes', () => {
     describe('with a valid profile id and body', () => {
       it('should return an updated profile', done => {
         request.put(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           if (err) return done(err);
@@ -166,7 +167,7 @@ describe('Profile Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.put(`${url}/api/profile/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           expect(err.status).to.equal(404);
@@ -178,7 +179,7 @@ describe('Profile Routes', () => {
     describe('without a valid body', () => {
       it('should return a 400 error', done => {
         request.put(`${url}/api/profile/${this.tempProfile._id}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           expect(err.status).to.equal(400);
           expect(res.text).to.equal('nothing to update');
@@ -188,7 +189,7 @@ describe('Profile Routes', () => {
     });
   });
   describe('DELETE /api/profile/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleProfile.userID = this.tempUser._id.toString();
       new Profile(exampleProfile).save()
       .then( profile => {
@@ -197,22 +198,22 @@ describe('Profile Routes', () => {
       })
       .catch( err => done(err));
     });
-    beforeEach(done => {
+    beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()
-      .then(recipe => {
+      .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
         return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
       })
-      .then(() => done())
+      .then( () => done())
       .catch(done);
     });
-    beforeEach(done => {
+    beforeEach( done => {
       exampleComment.commenterProfileID = this.tempProfile._id;
       exampleComment.recipeID = this.tempRecipe._id;
       new ResComment(exampleComment).save()
-      .then(comment => {
+      .then( comment => {
         this.tempComment = comment;
         done();
       })
@@ -233,7 +234,7 @@ describe('Profile Routes', () => {
     describe('with a valid profile id', () => {
       it('should delete the user and profile, with the profiles recipes and comments', done => {
         request.delete(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
@@ -244,7 +245,7 @@ describe('Profile Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/profile/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           expect(err.status).to.equal(404);
           done();
