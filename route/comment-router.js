@@ -15,8 +15,7 @@ const commentRouter = module.exports = Router();
 commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/comment/:recipeID');
 
-  if (!req.body) return next(createError(400, 'request body expected'));
-  if (!req.user) return next(createError(400, 'request user expected'));
+  if (!req._body) return next(createError(400, 'request body expected'));
 
   req.body.recipeID = req.params.recipeID;
   Profile.findOne( { userID: req.user._id } )
@@ -82,7 +81,6 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
     .then( profile => {
       let commentArray = profile.comments;
       let commentIndex = commentArray.indexOf(comment._id);
-      if (commentIndex === -1) return next(createError(404, 'not found'));
       commentArray.splice(commentIndex, 1);
       Profile.findByIdAndUpdate( profile._id, { $set: { comments: commentArray } }, { new: true } )
       .catch(next);
@@ -93,7 +91,6 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
 
       let commentArray = recipe.comments;
       let commentIndex = commentArray.indexOf(comment._id);
-      if (commentIndex === -1) return next(createError(404, 'not found'));
 
       commentArray.splice(commentIndex, 1);
 

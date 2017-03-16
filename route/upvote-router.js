@@ -15,8 +15,7 @@ const upvoteRouter = module.exports = Router();
 upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/upvote/:recipeID');
 
-  if (!req.body) return next(createError(400, 'request body expected'));
-  if (!req.user) return next(createError(400, 'request user expected'));
+  if (!req._body) return next(createError(400, 'request body expected'));
 
   req.body.recipeID = req.params.recipeID;
   Profile.findOne( { userID: req.user._id } )
@@ -82,7 +81,6 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
     .then( profile => {
       let upvoteArray = profile.upvotes;
       let upvoteIndex = upvoteArray.indexOf(upvote._id);
-      if (upvoteIndex === -1) return next(createError(404, 'not found'));
       upvoteArray.splice(upvoteIndex, 1);
       Profile.findByIdAndUpdate( profile._id, { $set: { upvotes: upvoteArray } }, { new: true} )
       .catch(next);
@@ -90,13 +88,9 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
     })
     .then( upvote => Recipe.findById(upvote.recipeID))
     .then( recipe => {
-
       let upvoteArray = recipe.upvotes;
       let upvoteIndex = upvoteArray.indexOf(upvote._id);
-      if (upvoteIndex === -1) return next(createError(404, 'not found'));
-
       upvoteArray.splice(upvoteIndex, 1);
-
       Recipe.findByIdAndUpdate( recipe._id, { $set: { upvotes: upvoteArray } }, { new: true} )
       .then( () => Upvote.findByIdAndRemove(upvote._id))
       .then( () => {

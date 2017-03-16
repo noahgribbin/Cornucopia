@@ -13,8 +13,8 @@ const recipeRouter = module.exports = Router();
 
 recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/recipe');
-  if (!req.body) return next(createError(400, 'expected body'));
-  if (!req.user) return next(createError(400, 'expected user'));
+
+  if (!req._body) return next(createError(400, 'request body expected'));
 
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {
@@ -60,7 +60,6 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
   .then( profile => {
     let recipeArray = profile.recipes;
     let recipeIndex = recipeArray.indexOf(req.params.id);
-    if (recipeIndex === -1) return next(createError(404, 'not found'));
     recipeArray.splice(recipeIndex, 1);
     return Profile.findByIdAndUpdate( profile._id, { $set: { recipes: recipeArray } }, { new: true} );
   })
