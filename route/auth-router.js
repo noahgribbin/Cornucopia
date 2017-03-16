@@ -24,6 +24,10 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
   .catch( err => next(createError(400, err.message)));
 });
 
+authRouter.get('/', function(req, res, next) {
+  res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg')
+})
+
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   debug('GET /api/signin');
 
