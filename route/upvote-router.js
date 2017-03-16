@@ -20,7 +20,7 @@ upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req,
   if (!req.user) return next(createError(400, 'request user expected'));
 
   req.body.recipeID = req.params.recipeID;
-  Profile.findOne( {userID: req.user._id} )
+  Profile.findOne( { userID: req.user._id } )
   .then( profile => {
     req.body.voterProfileID = profile._id;
     new Upvote(req.body).save()
@@ -28,14 +28,14 @@ upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req,
       profile.upvotes.push(upvote._id);
       profile.save();
       Recipe.findById(req.params.recipeID)
-      .then(recipe => {
+      .then( recipe => {
         recipe.upvotes.push(upvote._id);
         recipe.save();
         return recipe;
       })
-      .then(recipe => {
+      .then( recipe => {
         Profile.findById(upvote.voterProfileID)
-        .then(profile => {
+        .then( profile => {
           let response = { profile: profile, recipe: recipe, upvote: upvote };
           res.json(response);
         })
@@ -52,7 +52,7 @@ upvoteRouter.get('/api/upvote/:id', function(req, res, next) {
   debug('GET: /api/upvote/:id');
 
   Upvote.findById(req.params.id)
-  .then(upvote => res.json(upvote))
+  .then( upvote => res.json(upvote))
   .catch(next);
 });
 
@@ -61,7 +61,7 @@ upvoteRouter.get('/api/allupvotes/:profileID', function(req, res, next) {
 
   Profile.findById(req.params.profileID)
   .populate('upvote')
-  .then(upvote => res.json(upvote))
+  .then( upvote => res.json(upvote))
   .catch(next);
 });
 
@@ -70,7 +70,7 @@ upvoteRouter.get('/api/allrecipeupvotes/:recipeID', function(req, res, next) {
 
   Recipe.findById(req.params.recipeID)
   .populate('upvote')
-  .then(upvote => res.json(upvote))
+  .then( upvote => res.json(upvote))
   .catch(next);
 });
 
@@ -78,7 +78,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/upvote/:id');
 
   Upvote.findById(req.params.id)
-  .then(upvote => {
+  .then( upvote => {
     Profile.findById(upvote.voterProfileID)
     .then( profile => {
       let upvoteArray = profile.upvotes;

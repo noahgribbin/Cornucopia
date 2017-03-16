@@ -18,17 +18,17 @@ recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next
   if (!req.user) return next(createError(400, 'expected user'));
 
   Profile.findOne( {userID: req.user._id} )
-  .then(profile => {
+  .then( profile => {
     req.body.profileID = profile._id;
     return new Recipe(req.body).save()
   })
-  .then(recipe => {
+  .then( recipe => {
     Profile.findById(recipe.profileID)
-    .then(profile => {
+    .then( profile => {
       profile.recipes.push(recipe._id);
       return profile.save()
     })
-    .then(profile => {
+    .then( profile => {
       let response = { profile: profile, recipe: recipe };
       res.json(response);
     })
@@ -41,7 +41,7 @@ recipeRouter.get('/api/recipe/:id', function(req, res, next) {
   debug('GET: /api/recipe/:id');
 
   Recipe.findById(req.params.id)
-  .then(recipe => res.json(recipe))
+  .then( recipe => res.json(recipe))
   .catch(next);
 });
 
@@ -50,7 +50,7 @@ recipeRouter.get('/api/allrecipes/:profileID', function(req, res, next) {
 
   Profile.findById(req.params.profileID)
   .populate('recipes')
-  .then(profile => res.json(profile))
+  .then( profile => res.json(profile))
   .catch(next);
 });
 
@@ -77,7 +77,7 @@ recipeRouter.put('/api/recipe/:id', bearerAuth, jsonParser, function(req, res, n
   debug('PUT: /api/recipe/:id');
 
   if(req._body !== true) return next(createError(400, 'nothing to update'));
-  Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true } )
   .then( recipe => {
     res.json(recipe);
   })

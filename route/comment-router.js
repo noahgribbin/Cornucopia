@@ -20,7 +20,7 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
   if (!req.user) return next(createError(400, 'request user expected'));
 
   req.body.recipeID = req.params.recipeID;
-  Profile.findOne( {userID: req.user._id} )
+  Profile.findOne( { userID: req.user._id } )
   .then( profile => {
     req.body.commenterProfileID = profile._id;
     new ResComment(req.body).save()
@@ -28,14 +28,14 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
       profile.comments.push(comment._id);
       profile.save();
       Recipe.findById(req.params.recipeID)
-      .then(recipe => {
+      .then( recipe => {
         recipe.comments.push(comment._id);
         recipe.save();
         return recipe;
       })
-      .then(recipe => {
+      .then( recipe => {
         Profile.findById(comment.commenterProfileID)
-        .then(profile => {
+        .then( profile => {
           let response = { profile: profile, recipe: recipe, comment: comment };
           res.json(response);
         })
@@ -52,7 +52,7 @@ commentRouter.get('/api/comment/:id', function(req, res, next) {
   debug('GET: /api/comment/:id');
 
   ResComment.findById(req.params.id)
-  .then(comment => res.json(comment))
+  .then( comment => res.json(comment))
   .catch(next);
 });
 
@@ -61,7 +61,7 @@ commentRouter.get('/api/allcomments/:profileID', function(req, res, next) {
 
   Profile.findById(req.params.profileID)
   .populate('comment')
-  .then(comment => res.json(comment))
+  .then( comment => res.json(comment))
   .catch(next);
 });
 
@@ -70,7 +70,7 @@ commentRouter.get('/api/allrecipecomments/:recipeID', function(req, res, next) {
 
   Recipe.findById(req.params.recipeID)
   .populate('comment')
-  .then(comment => res.json(comment))
+  .then( comment => res.json(comment))
   .catch(next);
 });
 
@@ -78,7 +78,7 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/comment/:id');
 
   ResComment.findById(req.params.id)
-  .then(comment => {
+  .then( comment => {
     Profile.findById(comment.commenterProfileID)
     .then( profile => {
       let commentArray = profile.comments;

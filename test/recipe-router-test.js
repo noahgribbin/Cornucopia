@@ -38,7 +38,7 @@ describe('Recipe Routes', () => {
       this.tempUser = user;
       return user.generateToken();
     })
-    .then(token => {
+    .then( token => {
       this.tempToken = token;
       return;
     })
@@ -115,16 +115,16 @@ describe('Recipe Routes', () => {
     });
   });
   describe('GET /api/recipe/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()
-      .then(recipe => {
+      .then( recipe => {
         this.tempRecipe = recipe;
         done();
       })
       .catch(done);
     });
-    afterEach(done => {
+    afterEach( done => {
       Recipe.remove({})
       .then( () => {
         delete exampleRecipe.profileID;
@@ -149,7 +149,7 @@ describe('Recipe Routes', () => {
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/recipe/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -157,20 +157,20 @@ describe('Recipe Routes', () => {
     });
   });
   describe('GET /api/allrecipes/:profileID', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()
-      .then(recipe => {
+      .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
         return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
       })
-      .then(profile => {
+      .then( profile => {
         done();
       })
       .catch(done);
     });
-    afterEach(done => {
+    afterEach( done => {
       Recipe.remove({})
       .then( () => {
         delete exampleRecipe.profileID;
@@ -198,7 +198,7 @@ describe('Recipe Routes', () => {
     describe('without a valid user id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipes/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -219,13 +219,13 @@ describe('Recipe Routes', () => {
     beforeEach(done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()
-      .then(recipe => {
+      .then( recipe => {
         this.tempRecipe = recipe;
         done();
       })
       .catch(done);
     });
-    afterEach(done => {
+    afterEach( done => {
       Recipe.remove({})
       .then( () => {
         delete exampleRecipe.profileID;
@@ -240,7 +240,7 @@ describe('Recipe Routes', () => {
     describe('with a valid recipe id and body', () => {
       it('should return an updated recipe', done => {
         request.put(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           if (err) return done(err);
@@ -255,7 +255,7 @@ describe('Recipe Routes', () => {
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.put(`${url}/api/recipe/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           expect(err.status).to.equal(404);
@@ -267,7 +267,7 @@ describe('Recipe Routes', () => {
     describe('without a valid body', () => {
       it('should return a 400 error', done => {
         request.put(`${url}/api/recipe/${this.tempRecipe._id}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           expect(err.status).to.equal(400);
           expect(res.text).to.equal('nothing to update');
@@ -277,15 +277,15 @@ describe('Recipe Routes', () => {
     });
   });
   describe('DELETE /api/recipe/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()
-      .then(recipe => {
+      .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
         return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
       })
-      .then(profile => {
+      .then( profile => {
         done();
       })
       .catch(done);
@@ -301,12 +301,12 @@ describe('Recipe Routes', () => {
     describe('with a valid recipe id', () => {
       it('should return a 204 status', done => {
         request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
           Profile.findById(this.tempProfile._id)
-          .then(profile => {
+          .then( profile => {
             expect(profile.recipes.indexOf(this.tempRecipe._id)).to.equal(-1);
             done();
           })
@@ -317,7 +317,7 @@ describe('Recipe Routes', () => {
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/profile/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           expect(err.status).to.equal(404);
           done();
