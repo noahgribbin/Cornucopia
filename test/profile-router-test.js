@@ -10,8 +10,7 @@ const Upvote = require('../model/upvote.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
