@@ -34,7 +34,7 @@ const exampleUpvote = {
 const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
-  picURI: 'example recipe picURI',
+  recipeName: 'example recipe recipeName',
   categories: ['example cat 1', 'example cat 2']
 };
 
@@ -76,7 +76,7 @@ describe('Profile Routes', () => {
           let date = new Date(res.body.created).toString();
           expect(res.status).to.equal(200);
           expect(res.body.name).to.equal(exampleProfile.name);
-          expect(res.body.picURI).to.equal(exampleProfile.picURI);
+          expect(res.body.recipeName).to.equal(exampleProfile.recipeName);
           expect(date).to.not.equal('invalid date');
           done();
         });
