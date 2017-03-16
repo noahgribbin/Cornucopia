@@ -26,11 +26,30 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   debug('GET /api/signin');
+
   User.findOne({ username: req.auth.username})
   .then( user => {
     return user.comparePasswordHash(req.auth.password);
   })
   .then( user => user.generateToken())
   .then( token => res.send(token))
+  .catch(next);
+});
+
+authRouter.put('/api/account', basicAuth, jsonParser, function(req, res, next) {
+  debug('PUT /api/account');
+
+  if (!req._body) return next(createError(400, 'Expected request body')); 
+  User.findOne({ username : req.auth.username})
+  .then( user => user.comparePasswordHash(req.auth.password))
+  .then( user => {
+    if(req.body.password) {
+      user.generatePasswordHash(req.body.password)
+      .then( user => req.body.password = user._id)
+      .catch(next);    }
+    User.findByIdAndUpdate(user._id, req.body, {new: true})
+    .then( user => res.json(user))
+    .catch( next);
+  })
   .catch(next);
 });
