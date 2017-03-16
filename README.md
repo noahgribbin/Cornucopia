@@ -23,7 +23,7 @@ The user schema contains properties that used to verify the user.
   * email - email of the user
   * findHash - random encrypted 32 byte string. Used to generate a signed Json Web Token for the user.
 
-  ![image of user schema](https://ibb.co/kJfQka "Profile Schema")
+  ![image of user schema](https://raw.githubusercontent.com/i-saumitra/Voice-controlled-MP3-Player/master/screenshot.jpg "Profile Schema")
 
 
 #### Profile
