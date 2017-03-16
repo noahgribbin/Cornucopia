@@ -23,6 +23,9 @@ The user schema contains properties that used to verify the user.
   * email - email of the user
   * findHash - random encrypted 32 byte string. Used to generate a signed Json Web Token for the user.
 
+  ![alt text](https://ibb.co/kJfQka "Profile Schema")
+
+
 #### Profile
 
 The profile schema includes outward facing properties for a user.
@@ -34,6 +37,7 @@ The profile schema includes outward facing properties for a user.
   * comments - array of comment id's created when saved to mongoDB, used to create a relationship between a profile and their comments.
   * upvotes - array of upvote id's created when saved to mongoDB, links a profile to up/downvotes on a recipe.
 
+  ![alt text](https://ibb.co/dCkrQa "Profile Schema")
 #### Recipe
 
 The recipe schema includes properties for the actual recipe content.
@@ -46,6 +50,7 @@ The recipe schema includes properties for the actual recipe content.
   * upvotes - array of upvote id's created when saved to mongoDB, used to create a relationship  between a recipe and the up/downvotes associated.
   * created - created on date, automatically instantiated on creation of a recipe.
 
+  ![alt text](https://ibb.co/fWPUBF "Profile Schema")
 #### Comment
 
 The comment schema includes properties for the actual recipe content.
@@ -54,6 +59,8 @@ The comment schema includes properties for the actual recipe content.
   * recipeID - Points to the mongoDB id of the recipe the comment is attached to.
   * comment - Comment, created by a user to be posted on a recipe.
   * created - created on date, automatically instantiated on creation of a recipe.
+
+  ![alt text](https://ibb.co/bFE7yv "Profile Schema")
 
 ### Routes
 
