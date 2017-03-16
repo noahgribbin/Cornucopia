@@ -52,10 +52,9 @@ describe('Comment Routes', () => {
       .then( profile => {
         this.tempProfile = profile;
         done();
-      })
-      .catch(done);
+      });
     })
-    .catch(done);
+    .catch( err => done(err));
   });
   beforeEach( done => {
     exampleRecipe.profileID = this.tempProfile._id;
@@ -63,7 +62,7 @@ describe('Comment Routes', () => {
     .then( recipe => {
       this.tempRecipe = recipe;
       this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true} );
+      return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, {new: true} );
     })
     .then( () => done())
     .catch(done);
@@ -204,6 +203,7 @@ describe('Comment Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allcomments/n0taval1d1d00p5`)
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end( err => {
           expect(err.status).to.equal(404);
           done();
@@ -239,7 +239,7 @@ describe('Comment Routes', () => {
         });
       });
     });
-    describe('witho mut a valid user id', () => {
+    describe('without a valid user id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipecomments/alskdjf`)
         .end( err => {

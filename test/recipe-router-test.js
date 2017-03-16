@@ -7,8 +7,7 @@ const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -164,7 +163,7 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
+        return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, { new: true } );
       })
       .then( () => done())
       .catch(done);
@@ -282,7 +281,7 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
+        return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, { new: true } );
       })
       .then( () => done())
       .catch(done);

@@ -62,8 +62,7 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
     let recipeIndex = recipeArray.indexOf(req.params.id);
     if (recipeIndex === -1) return next(createError(404, 'not found'));
     recipeArray.splice(recipeIndex, 1);
-    profile.recipes = recipeArray;
-    return Profile.findByIdAndUpdate( profile._id, profile, { new: true} );
+    return Profile.findByIdAndUpdate( profile._id, { $set: { recipes: recipeArray } }, { new: true} );
   })
   .then( () => {
     Recipe.findByIdAndRemove(req.params.id);
