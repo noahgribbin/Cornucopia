@@ -84,8 +84,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
       let upvoteIndex = upvoteArray.indexOf(upvote._id);
       if (upvoteIndex === -1) return next(createError(404, 'not found'));
       upvoteArray.splice(upvoteIndex, 1);
-      profile.upvotes = upvoteArray;
-      Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+      Profile.findByIdAndUpdate( profile._id, { $set: { upvotes: upvoteArray } }, { new: true} )
       .catch(next);
       return upvote;
     })
@@ -97,9 +96,8 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
       if (upvoteIndex === -1) return next(createError(404, 'not found'));
 
       upvoteArray.splice(upvoteIndex, 1);
-      recipe.upvotes = upvoteArray;
 
-      Recipe.findByIdAndUpdate( recipe._id, recipe, { new: true} )
+      Recipe.findByIdAndUpdate( recipe._id, { $set: { upvotes: upvoteArray } }, { new: true} )
       .then( () => Upvote.findByIdAndRemove(upvote._id))
       .then( () => {
         res.status(204).send();
