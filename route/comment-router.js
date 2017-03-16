@@ -85,7 +85,7 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
       if (commentIndex === -1) return next(createError(404, 'not found'));
       commentArray.splice(commentIndex, 1);
       profile.comments = commentArray;
-      Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+      Profile.findByIdAndUpdate( profile._id, { $set: { comments: commentArray } }, { new: true } )
       .catch(next);
       return comment;
     })

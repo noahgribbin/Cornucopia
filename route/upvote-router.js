@@ -84,8 +84,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
       let upvoteIndex = upvoteArray.indexOf(upvote._id);
       if (upvoteIndex === -1) return next(createError(404, 'not found'));
       upvoteArray.splice(upvoteIndex, 1);
-      profile.upvotes = upvoteArray;
-      Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+      Profile.findByIdAndUpdate( profile._id, { $set: { comments: upvoteArray } }, { new: true} )
       .catch(next);
       return upvote;
     })
