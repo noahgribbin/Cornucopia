@@ -19,7 +19,7 @@ const badUser = {
   email: 'teste'
 };
 
-describe('Auth Routes', () => {
+describe.only('Auth Routes', () => {
   afterEach( done => {
     User.remove({})
     .then( () => done())
@@ -62,15 +62,15 @@ describe('Auth Routes', () => {
     });
   });
   describe('GET /api/signin', () => {
+    beforeEach( done => {
+      let user = new User(exampleUser);
+      user.generatePasswordHash(exampleUser.password)
+      .then( user => user.save())
+      .then( user => user.generateToken())
+      .then( () => done())
+      .catch( err => done(err));
+    });
     describe('with a valid username and password', () => {
-      before( done => {
-        let user = new User(exampleUser);
-        user.generatePasswordHash(exampleUser.password)
-        .then( user => user.save())
-        .then( user => user.generateToken())
-        .then( () => done())
-        .catch( err => done(err));
-      });
       it('should return a token', done => {
         request.get(`${url}/api/signin`)
         .auth('test username','test password')
@@ -83,15 +83,6 @@ describe('Auth Routes', () => {
       });
     });
     describe('with an invalid username', () => {
-      before( done => {
-        let password  = exampleUser.password;
-        let user = new User(exampleUser);
-        user.generatePasswordHash(password)
-        .then( user => user.save())
-        .then( user => user.generateToken())
-        .then( () => done())
-        .catch( err => done(err));
-      });
       it('should return 404 status code', done => {
         request.get(`${url}/api/signin`)
         .auth(badUser.username, exampleUser.password)
@@ -104,15 +95,6 @@ describe('Auth Routes', () => {
       });
     });
     describe('with an invalid password', () => {
-      before( done => {
-        let password  = exampleUser.password;
-        let user = new User(exampleUser);
-        user.generatePasswordHash(password)
-        .then( user => user.save())
-        .then( user => user.generateToken())
-        .then( () => done())
-        .catch( err => done(err));
-      });
       it('should return a 401 status code', done => {
         request.get(`${url}/api/signin`)
         .auth(exampleUser.username, badUser.password)
@@ -122,6 +104,18 @@ describe('Auth Routes', () => {
           expect(res.text).to.equal('Wrong password!');
           expect(res.res.statusMessage).to.equal('Unauthorized');
           expect(res.text).to.be.a('string');
+          done();
+        });
+      });
+    });
+    describe('with no token', () => {
+      it('should return a 401 status code', done => {
+        request.get(`${url}/api/signin`)
+        .set( {'Authorization': 'Basic '} )
+        .end( err => {
+          console.log('ERROR', err);
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
           done();
         });
       });

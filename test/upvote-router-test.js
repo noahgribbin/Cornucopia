@@ -25,7 +25,7 @@ const exampleProfile = {
 const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
-  picURI: 'example recipe picURI',
+  recipeName: 'example recipe recipeName',
   categories: ['example cat 1', 'example cat 2']
 };
 

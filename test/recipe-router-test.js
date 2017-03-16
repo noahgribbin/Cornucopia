@@ -23,7 +23,7 @@ const exampleProfile = {
 const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
-  picURI: 'example recipe picURI',
+  recipeName: 'example recipe recipeName',
   categories: ['example cat 1', 'example cat 2']
 };
 
@@ -84,7 +84,7 @@ describe('Recipe Routes', () => {
           expect(res.body.recipe.ingredients.toString()).to.equal(exampleRecipe.ingredients.toString());
           expect(res.body.recipe.instructions).to.equal(exampleRecipe.instructions);
           expect(res.body.recipe.categories.toString()).to.equal(exampleRecipe.categories.toString());
-          expect(res.body.recipe.picURI).to.equal(exampleRecipe.picURI);
+          expect(res.body.recipe.recipeName).to.equal(exampleRecipe.recipeName);
           expect(res.body.profile.recipes[0]).to.equal(res.body.recipe._id);
           expect(date).to.not.equal('invalid date');
           done();
@@ -93,7 +93,7 @@ describe('Recipe Routes', () => {
     });
     describe('with an invalid body', () => {
       it('should return a 400 error', done => {
-        request.post(`${url}/api/profile`)
+        request.post(`${url}/api/recipe`)
         .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           expect(err.status).to.equal(400);
@@ -141,7 +141,7 @@ describe('Recipe Routes', () => {
           expect(res.body.ingredients.toString()).to.equal(exampleRecipe.ingredients.toString());
           expect(res.body.instructions).to.equal(exampleRecipe.instructions);
           expect(res.body.categories.toString()).to.equal(exampleRecipe.categories.toString());
-          expect(res.body.picURI).to.equal(exampleRecipe.picURI);
+          expect(res.body.recipeName).to.equal(exampleRecipe.recipeName);
           done();
         });
       });
@@ -187,7 +187,7 @@ describe('Recipe Routes', () => {
           expect(res.body.recipes[0].categories.toString()).to.equal(this.tempRecipe.categories.toString());
           expect(res.body.recipes[0].ingredients.toString()).to.equal(this.tempRecipe.ingredients.toString());
           expect(res.body.recipes[0].instructions).to.equal(this.tempRecipe.instructions);
-          expect(res.body.recipes[0].picURI).to.equal(this.tempRecipe.picURI);
+          expect(res.body.recipes[0].recipeName).to.equal(this.tempRecipe.recipeName);
           expect(res.body.recipes.length).to.equal(1);
           done();
         });
@@ -245,7 +245,7 @@ describe('Recipe Routes', () => {
           expect(res.status).to.equal(200);
           expect(res.body.ingredients.toString()).to.equal(updated.ingredients.toString());
           expect(res.body.instructions).to.equal(updated.instructions);
-          expect(res.body.picURI).to.equal(exampleRecipe.picURI);
+          expect(res.body.recipeName).to.equal(exampleRecipe.recipeName);
           done();
         });
       });
