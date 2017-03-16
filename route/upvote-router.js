@@ -2,7 +2,6 @@
 
 const debug = require('debug')('cornucopia:upvote-router');
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
-const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
 const Router = require('express').Router;

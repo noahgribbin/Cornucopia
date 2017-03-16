@@ -9,7 +9,8 @@ const Upvote = require('../model/upvote.js');
 
 require('../server.js');
 
-const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:3003`;
+// const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'voteertestname',
@@ -35,7 +36,6 @@ const exampleUpvote = {
 
 describe('Upvote Routes', () => {
   beforeEach( done => {
-    let password = exampleUser.password;
     new User(exampleUser)
     .generatePasswordHash(exampleUser.password)
     .then( user => user.save())
@@ -64,7 +64,7 @@ describe('Upvote Routes', () => {
     .then( recipe => {
       this.tempRecipe = recipe;
       this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
     })
     .then( () => done())
     .catch(done);
@@ -205,8 +205,8 @@ describe('Upvote Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allupvotes/n0taval1d1d00p5`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -254,7 +254,7 @@ describe('Upvote Routes', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipeupvotes/n0taval1d1d00p5`)
         .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -330,7 +330,7 @@ describe('Upvote Routes', () => {
     describe('with a valid upvote id', () => {
       it('should return a 204 status', done => {
         request.delete(`${url}/api/upvote/${this.tempUpvote._id.toString()}`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
@@ -355,8 +355,8 @@ describe('Upvote Routes', () => {
     describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/upvote/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set({ Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });

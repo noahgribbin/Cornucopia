@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('debug')('cornucopia:recipe-router');
-const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
 const Router = require('express').Router;
@@ -20,13 +19,13 @@ recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {
     req.body.profileID = profile._id;
-    return new Recipe(req.body).save()
+    return new Recipe(req.body).save();
   })
   .then( recipe => {
     Profile.findById(recipe.profileID)
     .then( profile => {
       profile.recipes.push(recipe._id);
-      return profile.save()
+      return profile.save();
     })
     .then( profile => {
       let response = { profile: profile, recipe: recipe };
@@ -64,7 +63,7 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
     if (recipeIndex === -1) return next(createError(404, 'not found'));
     recipeArray.splice(recipeIndex, 1);
     profile.recipes = recipeArray;
-    return Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+    return Profile.findByIdAndUpdate( profile._id, profile, { new: true} );
   })
   .then( () => {
     Recipe.findByIdAndRemove(req.params.id);

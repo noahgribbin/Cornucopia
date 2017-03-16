@@ -9,7 +9,8 @@ const ResComment = require('../model/comment.js');
 
 require('../server.js');
 
-const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:3003`;
+// const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -35,7 +36,6 @@ const exampleComment = {
 
 describe('Comment Routes', () => {
   beforeEach( done => {
-    let password = exampleUser.password;
     new User(exampleUser)
     .generatePasswordHash(exampleUser.password)
     .then( user => user.save())
@@ -54,8 +54,9 @@ describe('Comment Routes', () => {
         this.tempProfile = profile;
         done();
       })
+      .catch(done);
     })
-    .catch( err => done(err));
+    .catch(done);
   });
   beforeEach( done => {
     exampleRecipe.profileID = this.tempProfile._id;
@@ -65,9 +66,7 @@ describe('Comment Routes', () => {
       this.tempProfile.recipes.push(this.tempRecipe._id);
       return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
     })
-    .then( profile => {
-      done();
-    })
+    .then( () => done())
     .catch(done);
   });
   afterEach( done => {
@@ -206,8 +205,7 @@ describe('Comment Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allcomments/n0taval1d1d00p5`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -242,7 +240,7 @@ describe('Comment Routes', () => {
         });
       });
     });
-    describe('without a valid user id', () => {
+    describe('witho mut a valid user id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipecomments/alskdjf`)
         .end( err => {
@@ -255,7 +253,7 @@ describe('Comment Routes', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipecomments/n0taval1d1d00p5`)
         .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -357,7 +355,7 @@ describe('Comment Routes', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/comment/n0taval1d1d00p5`)
         .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
