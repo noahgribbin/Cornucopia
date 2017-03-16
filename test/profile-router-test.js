@@ -6,11 +6,11 @@ const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
 const ResComment = require('../model/comment.js');
+const Upvote = require('../model/upvote.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// ${process.env.PORT};
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -25,6 +25,10 @@ const exampleProfile = {
 
 const exampleComment = {
   comment: 'example comment'
+};
+
+const exampleUpvote = {
+  upvote: 'example upvote'
 };
 
 const exampleRecipe = {
@@ -115,7 +119,6 @@ describe('Profile Routes', () => {
     describe('with a valid profile id', () => {
       it('should return a profile', done => {
         request.get(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
@@ -128,7 +131,42 @@ describe('Profile Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/profile/n0taval1d1d00p5`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .end((err, res) => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
+  });
+  describe('GET /api/allprofiles', () => {
+    before( done => {
+      exampleProfile.userID = this.tempUser._id.toString();
+      new Profile(exampleProfile).save()
+      .then( profile => {
+        this.tempProfile = profile;
+        console.log('THIS TEMP',this.tempProfile);
+        done();
+      })
+      .catch(err => done(err));
+    });
+    describe('with a valid endpoint', () => {
+      it('should return a list of all profiles', done => {
+        request.get(`${url}/api/allprofiles`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.length).to.equal(1);
+          expect(res.body[0]._id.toString()).to.equal(this.tempProfile._id.toString());
+          expect(res.body[0].name).to.equal(this.tempProfile.name);
+          expect(res.body[0].userID.toString()).to.equal(this.tempProfile.userID.toString());
+          expect(res.body[0].profilePicURI).to.equal(this.tempProfile.profilePicURI);
+          done();
+        });
+      });
+    });
+    describe('with an invalid path', () => {
+      it('should return a 404 error', done => {
+        request.get(`${url}/api/ohdear`)
         .end((err, res) => {
           expect(err.status).to.equal(404);
           done();
@@ -219,13 +257,30 @@ describe('Profile Routes', () => {
       })
       .catch(done);
     });
+    beforeEach( done => {
+      exampleUpvote.voterProfileID = this.tempProfile._id;
+      exampleUpvote.recipeID = this.tempRecipe._id;
+      new Upvote(exampleUpvote).save()
+      .then( upvote => {
+        this.tempUpvote = upvote;
+        done();
+      })
+      .catch(done);
+    });
     afterEach( done => {
       Promise.all([
         User.remove({}),
-        Profile.remove({})
+        Profile.remove({}),
+        Recipe.remove({}),
+        ResComment.remove({}),
+        Upvote.remove({})
       ])
       .then( () => {
         delete exampleProfile.userID;
+        delete exampleUpvote.commenterProfileID;
+        delete exampleUpvote.recipeID;
+        delete exampleComment.commenterProfileID;
+        delete exampleComment.recipeID;
         done();
       })
       .catch(done);
@@ -234,10 +289,30 @@ describe('Profile Routes', () => {
     describe('with a valid profile id', () => {
       it('should delete the user and profile, with the profiles recipes and comments', done => {
         request.delete(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
+          ResComment.findById(this.tempComment._id)
+          .catch( err => {
+            expect(err).to.be(404);
+          });
+          Upvote.findById(this.tempUpvote._id)
+          .catch( err => {
+            expect(err).to.be(404);
+          });
+          Recipe.findById(this.tempRecipe._id)
+          .catch( err => {
+            expect(err).to.be(404);
+          });
+          Profile.findById(this.tempProfile._id)
+          .catch( err => {
+            expect(err).to.be(404);
+          });
+          User.findById(this.tempUser._id)
+          .catch( err => {
+            expect(err).to.be(404);
+          });
           done();
         });
       });

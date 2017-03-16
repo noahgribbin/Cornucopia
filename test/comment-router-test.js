@@ -9,8 +9,7 @@ const ResComment = require('../model/comment.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// ${process.env.PORT};
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
