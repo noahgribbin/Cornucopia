@@ -9,8 +9,7 @@ const ResComment = require('../model/comment.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -64,7 +63,7 @@ describe('Comment Routes', () => {
     .then( recipe => {
       this.tempRecipe = recipe;
       this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true} );
     })
     .then( () => done())
     .catch(done);
