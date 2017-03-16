@@ -84,7 +84,6 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
       let commentIndex = commentArray.indexOf(comment._id);
       if (commentIndex === -1) return next(createError(404, 'not found'));
       commentArray.splice(commentIndex, 1);
-      profile.comments = commentArray;
       Profile.findByIdAndUpdate( profile._id, { $set: { comments: commentArray } }, { new: true } )
       .catch(next);
       return comment;
@@ -97,9 +96,8 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
       if (commentIndex === -1) return next(createError(404, 'not found'));
 
       commentArray.splice(commentIndex, 1);
-      recipe.comments = commentArray;
 
-      Recipe.findByIdAndUpdate( recipe._id, recipe, { new: true} )
+      Recipe.findByIdAndUpdate( recipe._id, { $set: { comments: commentArray } }, { new: true} )
       .then( () => ResComment.findByIdAndRemove(comment._id))
       .then( () => {
         res.status(204).send();
