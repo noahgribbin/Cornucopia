@@ -13,8 +13,8 @@ const recipeRouter = module.exports = Router();
 
 recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/recipe');
-  if (!req.body) return next(createError(400, 'expected body'));
-  if (!req.user) return next(createError(400, 'expected user'));
+
+  if (!req._body) return next(createError(400, 'request body expected'));
 
   Profile.findOne( {userID: req.user._id} )
   .then( profile => {

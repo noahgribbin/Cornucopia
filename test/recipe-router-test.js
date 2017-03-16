@@ -311,6 +311,17 @@ describe('Recipe Routes', () => {
         });
       });
     });
+    describe('with a previously deleted recipe id', () => {
+      it('should return a 404 error', done => {
+        delete this.tempRecipe._id.toString();
+        request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .end( err => {
+          expect(err.status).to.equal(404);
+          done();
+        });
+      });
+    });
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/profile/n0taval1d1d00p5`)

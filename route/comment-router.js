@@ -15,8 +15,7 @@ const commentRouter = module.exports = Router();
 commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/comment/:recipeID');
 
-  if (!req.body) return next(createError(400, 'request body expected'));
-  if (!req.user) return next(createError(400, 'request user expected'));
+  if (!req._body) return next(createError(400, 'request body expected'));
 
   req.body.recipeID = req.params.recipeID;
   Profile.findOne( { userID: req.user._id } )

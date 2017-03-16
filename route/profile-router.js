@@ -18,7 +18,6 @@ profileRouter.post('/api/profile', bearerAuth, jsonParser, function(req, res, ne
   debug('POST: /api/profile');
 
   if (!req._body) return next(createError(400, 'request body expected'));
-  if (!req.user) return next(createError(400, 'request user expected'));
   req.body.userID = req.user._id;
   new Profile(req.body).save()
   .then( profile => res.json(profile))
