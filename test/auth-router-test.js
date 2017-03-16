@@ -19,7 +19,7 @@ const badUser = {
   email: 'teste'
 };
 
-describe.only('Auth Routes', () => {
+describe('Auth Routes', () => {
   afterEach( done => {
     User.remove({})
     .then( () => done())
@@ -113,13 +113,23 @@ describe.only('Auth Routes', () => {
         request.get(`${url}/api/signin`)
         .set( {'Authorization': 'Basic '} )
         .end( err => {
-          console.log('ERROR', err);
           expect(err.status).to.equal(401);
           expect(err.message).to.equal('Unauthorized');
           done();
         });
       });
     });
+    // describe('with missing authorization headers', () => {
+    //   it('should return a 401 status code', done => {
+    //     request.get(`${url}/api/signin`)
+    //     .auth({})
+    //     .end( err => {
+    //       expect(err.status).to.equal(401);
+    //       expect(err.message).to.equal('Unauthorized');
+    //       done();
+    //     });
+    //   });
+    // });
   });
   describe('PUT /api/account', () => {
     beforeEach( done => {

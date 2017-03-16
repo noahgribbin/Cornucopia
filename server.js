@@ -17,7 +17,6 @@ const upvoteRouter = require('./route/upvote-router.js');
 
 dotenv.load();
 
-const PORT = process.env.PORT || 8000;
 const app = express();
 
 mongoose.Promise = Promise;
@@ -32,4 +31,4 @@ app.use(commentRouter);
 app.use(upvoteRouter);
 app.use(errors);
 
-app.listen(PORT, () => debug(`server up: ${PORT}`));
+app.listen((process.env.PORT || 8000), () => debug(`server up!`));
