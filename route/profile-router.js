@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('debug')('cornucopia:profile-router');
-const Promise = require('bluebird');
 const createError = require('http-errors');
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();

@@ -7,7 +7,8 @@ const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
 require('../server.js');
 
-const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:3003`;
+// const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -30,7 +31,6 @@ const exampleRecipe = {
 
 describe('Recipe Routes', () => {
   beforeEach( done => {
-    let password = exampleUser.password;
     new User(exampleUser)
     .generatePasswordHash(exampleUser.password)
     .then( user => user.save())
@@ -49,8 +49,9 @@ describe('Recipe Routes', () => {
         this.tempProfile = profile;
         done();
       })
+      .catch(done);
     })
-    .catch( err => done(err));
+    .catch(done);
   });
   afterEach( done => {
     Promise.all([
@@ -71,7 +72,7 @@ describe('Recipe Routes', () => {
         done();
       })
       .catch(done);
-    })
+    });
     describe('with a valid body', () => {
       it('should return a token', done => {
         request.post(`${url}/api/recipe`)
@@ -131,7 +132,7 @@ describe('Recipe Routes', () => {
         done();
       })
       .catch(done);
-    })
+    });
     describe('with a valid recipe id', () => {
       it('should return a recipe', done => {
         request.get(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
@@ -163,11 +164,9 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
       })
-      .then( profile => {
-        done();
-      })
+      .then( () => done())
       .catch(done);
     });
     afterEach( done => {
@@ -207,8 +206,8 @@ describe('Recipe Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/profile/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -216,7 +215,7 @@ describe('Recipe Routes', () => {
     });
   });
   describe('PUT /api/recipe/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()
       .then( recipe => {
@@ -232,7 +231,7 @@ describe('Recipe Routes', () => {
         done();
       })
       .catch(done);
-    })
+    });
     const updated = {
       ingredients: ['updated ingredient 1', 'updated ingredient 2', 'updated ingredient 3'],
       instructions: 'updated instructions'
@@ -283,14 +282,12 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
       })
-      .then( profile => {
-        done();
-      })
+      .then( () => done())
       .catch(done);
     });
-    afterEach(done => {
+    afterEach( done => {
       Recipe.remove({})
       .then( () => {
         delete exampleRecipe.profileID;
@@ -317,8 +314,8 @@ describe('Recipe Routes', () => {
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/profile/n0taval1d1d00p5`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });

@@ -7,7 +7,7 @@ const User = require('../model/user.js');
 
 require('../server.js');
 
-const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:3003`;
 
 const exampleUser = {
   username: 'test username',
@@ -64,9 +64,8 @@ describe('Auth Routes', () => {
   describe('GET /api/signin', () => {
     describe('with a valid username and password', () => {
       before( done => {
-        let password  = exampleUser.password;
         let user = new User(exampleUser);
-        user.generatePasswordHash(password)
+        user.generatePasswordHash(exampleUser.password)
         .then( user => user.save())
         .then( user => user.generateToken())
         .then( () => done())

@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('debug')('cornucopia:upvote-router');
-const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
 const Router = require('express').Router;

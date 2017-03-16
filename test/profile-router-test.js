@@ -10,7 +10,8 @@ const Upvote = require('../model/upvote.js');
 
 require('../server.js');
 
-const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:3003`;
+// const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -41,7 +42,6 @@ const exampleRecipe = {
 
 describe('Profile Routes', () => {
   beforeEach( done => {
-    let password = exampleUser.password;
     new User(exampleUser)
     .generatePasswordHash(exampleUser.password)
     .then( user => user.save())
@@ -131,7 +131,7 @@ describe('Profile Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/profile/n0taval1d1d00p5`)
-        .end((err, res) => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -144,7 +144,6 @@ describe('Profile Routes', () => {
       new Profile(exampleProfile).save()
       .then( profile => {
         this.tempProfile = profile;
-        console.log('THIS TEMP',this.tempProfile);
         done();
       })
       .catch(err => done(err));
@@ -167,7 +166,7 @@ describe('Profile Routes', () => {
     describe('with an invalid path', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/ohdear`)
-        .end((err, res) => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -242,7 +241,7 @@ describe('Profile Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
       })
       .then( () => done())
       .catch(done);
@@ -320,8 +319,8 @@ describe('Profile Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/profile/n0taval1d1d00p5`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });

@@ -17,13 +17,12 @@ const upvoteRouter = require('./route/upvote-router.js');
 
 dotenv.load();
 
-const PORT = process.env.PORT || 8000;
+const PORT = 3003;
+// process.env.PORT || 8000;
 const app = express();
 
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI);
-
-// let morganFormat = process.env.PRODUCTION ? 'common' : 'dev';
 
 app.use(cors());
 app.use(morgan('dev'));
@@ -34,8 +33,4 @@ app.use(commentRouter);
 app.use(upvoteRouter);
 app.use(errors);
 
-const server = module.exports = app.listen(PORT, () => {
-  debug((`server up: ${PORT}`));
-});
-
-// server.isRunning = true;
+app.listen(PORT, () => debug(`server up: ${PORT}`));
