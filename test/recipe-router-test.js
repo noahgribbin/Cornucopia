@@ -163,7 +163,7 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, { new: true } );
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
       })
       .then( () => done())
       .catch(done);
@@ -281,7 +281,7 @@ describe('Recipe Routes', () => {
       .then( recipe => {
         this.tempRecipe = recipe;
         this.tempProfile.recipes.push(this.tempRecipe._id);
-        return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, { new: true } );
+        return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, { new: true } );
       })
       .then( () => done())
       .catch(done);
@@ -307,17 +307,6 @@ describe('Recipe Routes', () => {
             done();
           })
           .catch(done);
-        });
-      });
-    });
-    describe('with a previously deleted recipe id', () => {
-      it('should return a 404 error', done => {
-        delete this.tempRecipe._id.toString();
-        request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}`)
-        .set( { Authorization: `Bearer ${this.tempToken}`} )
-        .end( err => {
-          expect(err.status).to.equal(404);
-          done();
         });
       });
     });
