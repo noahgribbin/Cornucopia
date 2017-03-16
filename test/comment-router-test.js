@@ -62,7 +62,7 @@ describe('Comment Routes', () => {
     .then( recipe => {
       this.tempRecipe = recipe;
       this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true} );
+      return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, {new: true} );
     })
     .then( () => done())
     .catch(done);
