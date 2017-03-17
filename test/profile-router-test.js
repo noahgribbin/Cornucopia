@@ -67,7 +67,7 @@ describe('Profile Routes', () => {
   });
   describe('POST /api/profile', () => {
     describe('with a valid body', () => {
-      it('should return a token', done => {
+      it('should return a profile', done => {
         request.post(`${url}/api/profile`)
         .set( { Authorization: `Bearer ${this.tempToken}` } )
         .send(exampleProfile)
@@ -100,6 +100,17 @@ describe('Profile Routes', () => {
         .end((err, res) => {
           expect(err.status).to.equal(401);
           expect(res.text).to.equal('authorization header required');
+          done();
+        });
+      });
+    });
+    describe('with no token', () => {
+      it('should return a 401 status code', done => {
+        request.post(`${url}/api/profile`)
+        .set( { Authorization: 'Bearer ' } )
+        .end( err => {
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
           done();
         });
       });
