@@ -52,7 +52,12 @@ authRouter.put('/api/account', basicAuth, jsonParser, function(req, res, next) {
   })
   .catch(next);
 });
+
 authRouter.get('/', function(req, res, next) {
   res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg');
   next();
+});
+
+authRouter.get('/', function(req, res, next) {
+  res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg');
 });
