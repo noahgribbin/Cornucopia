@@ -119,17 +119,38 @@ describe('Auth Routes', () => {
         });
       });
     });
-    // describe('with missing authorization headers', () => {
-    //   it('should return a 401 status code', done => {
-    //     request.get(`${url}/api/signin`)
-    //     .auth({})
-    //     .end( err => {
-    //       expect(err.status).to.equal(401);
-    //       expect(err.message).to.equal('Unauthorized');
-    //       done();
-    //     });
-    //   });
-    // });
+    describe('with missing username', () => {
+      it('should return a 401 status code', done => {
+        request.get(`${url}/api/signin`)
+        .auth('', exampleUser.password)
+        .end( err => {
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
+    describe('with missing password', () => {
+      it('should return a 401 status code', done => {
+        request.get(`${url}/api/signin`)
+        .auth(exampleUser.username, '')
+        .end( err => {
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
+    describe('with no auth header', () => {
+      it('should return a 401 status code', done => {
+        request.get(`${url}/api/signin`)
+        .end( err => {
+          expect(err.status).to.equal(401);
+          expect(err.message).to.equal('Unauthorized');
+          done();
+        });
+      });
+    });
   });
   describe('PUT /api/account', () => {
     beforeEach( done => {

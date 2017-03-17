@@ -45,19 +45,11 @@ authRouter.put('/api/account', basicAuth, jsonParser, function(req, res, next) {
     if(req.body.password) {
       user.generatePasswordHash(req.body.password)
       .then( user => req.body.password = user._id)
-      .catch(next);    }
+      .catch(next);
+    }
     User.findByIdAndUpdate(user._id, req.body, {new: true} )
     .then( user => res.json(user))
     .catch(next);
   })
   .catch(next);
-});
-
-authRouter.get('/', function(req, res, next) {
-  res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg');
-  next();
-});
-
-authRouter.get('/', function(req, res) {
-  res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg').end();
 });
