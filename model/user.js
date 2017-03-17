@@ -16,7 +16,7 @@ const userSchema = Schema({
   findHash: {type: String, unique: true }
 });
 
-userSchema.methods.generatePasswordHash = function(password){
+userSchema.methods.generatePasswordHash = function(password) {
   debug('generatePasswordHash');
 
   return new Promise((resolve, reject) => {
@@ -28,8 +28,9 @@ userSchema.methods.generatePasswordHash = function(password){
   });
 };
 
-userSchema.methods.comparePasswordHash = function(password){
+userSchema.methods.comparePasswordHash = function(password) {
   debug('comparePasswordHash');
+
   return new Promise((resolve, reject) => {
     bcrypt.compare(password, this.password, (err, valid) => {
       if(err) return reject(err);
@@ -39,14 +40,14 @@ userSchema.methods.comparePasswordHash = function(password){
   });
 };
 
-userSchema.methods.generateFindHash = function(){
+userSchema.methods.generateFindHash = function() {
   debug('generateFindHash');
 
   return new Promise((resolve, reject) => {
     let tries = 0;
 
-    _generateFindHash.call(this);// Ask later
-    function _generateFindHash(){
+    _generateFindHash.call(this);
+    function _generateFindHash() {
       this.findHash = crypto.randomBytes(32).toString('hex');
       this.save()
       .then( () => resolve(this.findHash))
@@ -59,15 +60,15 @@ userSchema.methods.generateFindHash = function(){
   });
 };
 
-userSchema.methods.generateToken = function(){
+userSchema.methods.generateToken = function() {
   debug('generateToken');
 
   return new Promise((resolve, reject) => {
     this.generateFindHash()
     .then( findHash => {
-      resolve( jwt.sign({token : findHash}, process.env.APP_SECRET));
+      resolve( jwt.sign( {token: findHash }, process.env.APP_SECRET));
     })
-    .catch(err => reject(err));
+    .catch( err => reject(err));
   });
 };
 

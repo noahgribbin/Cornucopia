@@ -2,31 +2,30 @@
 
 const expect = require('chai').expect;
 const request = require('superagent');
-const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
+const Profile = require('../model/profile.js');
 const Recipe = require('../model/recipe.js');
 const Upvote = require('../model/upvote.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
-  username: 'testusername',
-  password: 'lalala',
-  email: 'example@example.com'
+  username: 'voteertestname',
+  password: 's0m3pa55w0rd',
+  email: 'email@example.com'
 };
 
 const exampleProfile = {
-  name: 'example name',
-  profilePicURI: 'example uri'
+  name: 'upvote example name',
+  profilePicURI: 'upvote example uri'
 };
 
 const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
-  picURI: 'example recipe picURI',
+  recipeName: 'example recipe recipeName',
   categories: ['example cat 1', 'example cat 2']
 };
 
@@ -36,7 +35,6 @@ const exampleUpvote = {
 
 describe('Upvote Routes', () => {
   beforeEach( done => {
-    let password = exampleUser.password;
     new User(exampleUser)
     .generatePasswordHash(exampleUser.password)
     .then( user => user.save())
@@ -44,7 +42,7 @@ describe('Upvote Routes', () => {
       this.tempUser = user;
       return user.generateToken();
     })
-    .then(token => {
+    .then( token => {
       this.tempToken = token;
       return;
     })
@@ -55,20 +53,19 @@ describe('Upvote Routes', () => {
         this.tempProfile = profile;
         done();
       })
+      .catch(done);
     })
-    .catch( err => done(err));
+    .catch(done);
   });
-  beforeEach(done => {
+  beforeEach( done => {
     exampleRecipe.profileID = this.tempProfile._id;
     new Recipe(exampleRecipe).save()
-    .then(recipe => {
+    .then( recipe => {
       this.tempRecipe = recipe;
       this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+      return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, { new: true } );
     })
-    .then(profile => {
-      done();
-    })
+    .then( () => done())
     .catch(done);
   });
   afterEach( done => {
@@ -82,7 +79,7 @@ describe('Upvote Routes', () => {
       delete exampleProfile.userID;
       delete exampleRecipe.profileID;
       delete exampleUpvote.recipeID;
-      delete exampleUpvote.upvoterProfileID;
+      delete exampleUpvote.voterProfileID;
       this.tempProfile.recipes = [];
       done();
     })
@@ -92,7 +89,7 @@ describe('Upvote Routes', () => {
     describe('with a valid body and recipe ID', () => {
       it('should return a upvote', done => {
         exampleUpvote.recipeID = this.tempRecipe._id;
-        exampleUpvote.upvoterProfileID = this.tempProfile._id;
+        exampleUpvote.voterProfileID = this.tempProfile._id;
         request.post(`${url}/api/upvote/${this.tempRecipe._id.toString()}`)
         .set( { Authorization: `Bearer ${this.tempToken}` } )
         .send(exampleUpvote)
@@ -103,7 +100,7 @@ describe('Upvote Routes', () => {
           expect(res.body.profile.upvotes[0].toString()).to.equal(res.body.upvote._id.toString());
           expect(res.body.recipe.upvotes[0].toString()).to.equal(res.body.upvote._id.toString());
           expect(res.body.upvote.upvote).to.equal(exampleUpvote.upvote);
-          expect(res.body.upvote.upvoterProfileID).to.equal(this.tempProfile._id.toString());
+          expect(res.body.upvote.voterProfileID).to.equal(this.tempProfile._id.toString());
           expect(res.body.upvote.recipeID).to.equal(this.tempRecipe._id.toString());
           expect(date).to.not.equal('invalid date');
           done();
@@ -134,11 +131,11 @@ describe('Upvote Routes', () => {
     });
   });
   describe('GET /api/upvote/:id', () => {
-    beforeEach(done => {
-      exampleUpvote.upvoterProfileID = this.tempProfile._id;
+    beforeEach( done => {
+      exampleUpvote.voterProfileID = this.tempProfile._id;
       exampleUpvote.recipeID = this.tempRecipe._id;
       new Upvote(exampleUpvote).save()
-      .then(upvote => {
+      .then( upvote => {
         this.tempUpvote = upvote;
         done();
       })
@@ -152,7 +149,7 @@ describe('Upvote Routes', () => {
           expect(res.status).to.equal(200);
           expect(res.body.upvote).to.equal(exampleUpvote.upvote);
           expect(res.body.recipeID.toString()).to.equal(exampleUpvote.recipeID.toString());
-          expect(res.body.upvoterProfileID.toString()).to.equal(exampleUpvote.upvoterProfileID.toString());
+          expect(res.body.voterProfileID.toString()).to.equal(exampleUpvote.voterProfileID.toString());
           done();
         });
       });
@@ -160,7 +157,7 @@ describe('Upvote Routes', () => {
     describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/upvote/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -168,11 +165,11 @@ describe('Upvote Routes', () => {
     });
   });
   describe('GET /api/allupvotes/:profileID', () => {
-    beforeEach(done => {
-      exampleUpvote.upvoterProfileID = this.tempProfile._id;
+    beforeEach( done => {
+      exampleUpvote.voterProfileID = this.tempProfile._id;
       exampleUpvote.recipeID = this.tempRecipe._id;
       new Upvote(exampleUpvote).save()
-      .then(upvote => {
+      .then( upvote => {
         this.tempUpvote = upvote;
         this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
@@ -198,7 +195,7 @@ describe('Upvote Routes', () => {
     describe('without a valid user id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allupvotes/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -207,8 +204,8 @@ describe('Upvote Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allupvotes/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -216,11 +213,11 @@ describe('Upvote Routes', () => {
     });
   });
   describe('GET /api/allrecipeupvotes/:recipeID', () => {
-    beforeEach(done => {
-      exampleUpvote.upvoterProfileID = this.tempProfile._id;
+    beforeEach( done => {
+      exampleUpvote.voterProfileID = this.tempProfile._id;
       exampleUpvote.recipeID = this.tempRecipe._id;
       new Upvote(exampleUpvote).save()
-      .then(upvote => {
+      .then( upvote => {
         this.tempUpvote = upvote;
         this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
@@ -255,8 +252,8 @@ describe('Upvote Routes', () => {
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipeupvotes/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -264,11 +261,11 @@ describe('Upvote Routes', () => {
     });
   });
   describe('PUT /api/upvote/:id', () => {
-    beforeEach(done => {
-      exampleUpvote.upvoterProfileID = this.tempProfile._id;
+    beforeEach( done => {
+      exampleUpvote.voterProfileID = this.tempProfile._id;
       exampleUpvote.recipeID = this.tempRecipe._id;
       new Upvote(exampleUpvote).save()
-      .then(upvote => {
+      .then( upvote => {
         this.tempUpvote = upvote;
         done();
       })
@@ -280,7 +277,7 @@ describe('Upvote Routes', () => {
     describe('with a valid upvote id and body', () => {
       it('should return an updated recipe', done => {
         request.put(`${url}/api/upvote/${this.tempUpvote._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           if (err) return done(err);
@@ -293,7 +290,7 @@ describe('Upvote Routes', () => {
     describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
         request.put(`${url}/api/upvote/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           expect(err.status).to.equal(404);
@@ -315,11 +312,11 @@ describe('Upvote Routes', () => {
     });
   });
   describe('DELETE /api/upvote/:id', () => {
-    beforeEach(done => {
-      exampleUpvote.upvoterProfileID = this.tempProfile._id;
+    beforeEach( done => {
+      exampleUpvote.voterProfileID = this.tempProfile._id;
       exampleUpvote.recipeID = this.tempRecipe._id;
       new Upvote(exampleUpvote).save()
-      .then(upvote => {
+      .then( upvote => {
         this.tempUpvote = upvote;
         this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
@@ -332,7 +329,7 @@ describe('Upvote Routes', () => {
     describe('with a valid upvote id', () => {
       it('should return a 204 status', done => {
         request.delete(`${url}/api/upvote/${this.tempUpvote._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}` } )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
@@ -341,13 +338,12 @@ describe('Upvote Routes', () => {
             expect(err).to.be(404);
           });
           Profile.findById(this.tempProfile._id)
-          .then(profile => {
-            console.log('PROFILE IN DELETE', profile);
+          .then( profile => {
             expect(profile.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);
           })
           .catch(done);
           Recipe.findById(this.tempRecipe._id)
-          .then(recipe => {
+          .then( recipe => {
             expect(recipe.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);
           })
           .catch(done);
@@ -358,8 +354,8 @@ describe('Upvote Routes', () => {
     describe('without a valid upvote id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/upvote/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set({ Authorization: `Bearer ${this.tempToken}` } )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });

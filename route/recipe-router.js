@@ -1,7 +1,6 @@
 'use strict';
 
 const debug = require('debug')('cornucopia:recipe-router');
-const Promise = require('bluebird');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
 const Router = require('express').Router;
@@ -14,21 +13,21 @@ const recipeRouter = module.exports = Router();
 
 recipeRouter.post('/api/recipe', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST: /api/recipe');
-  if (!req.body) return next(createError(400, 'expected body'));
-  if (!req.user) return next(createError(400, 'expected user'));
+
+  if (!req._body) return next(createError(400, 'request body expected'));
 
   Profile.findOne( {userID: req.user._id} )
-  .then(profile => {
+  .then( profile => {
     req.body.profileID = profile._id;
-    return new Recipe(req.body).save()
+    return new Recipe(req.body).save();
   })
-  .then(recipe => {
+  .then( recipe => {
     Profile.findById(recipe.profileID)
-    .then(profile => {
+    .then( profile => {
       profile.recipes.push(recipe._id);
-      return profile.save()
+      return profile.save();
     })
-    .then(profile => {
+    .then( profile => {
       let response = { profile: profile, recipe: recipe };
       res.json(response);
     })
@@ -41,7 +40,7 @@ recipeRouter.get('/api/recipe/:id', function(req, res, next) {
   debug('GET: /api/recipe/:id');
 
   Recipe.findById(req.params.id)
-  .then(recipe => res.json(recipe))
+  .then( recipe => res.json(recipe))
   .catch(next);
 });
 
@@ -50,7 +49,7 @@ recipeRouter.get('/api/allrecipes/:profileID', function(req, res, next) {
 
   Profile.findById(req.params.profileID)
   .populate('recipes')
-  .then(profile => res.json(profile))
+  .then( profile => res.json(profile))
   .catch(next);
 });
 
@@ -61,10 +60,8 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
   .then( profile => {
     let recipeArray = profile.recipes;
     let recipeIndex = recipeArray.indexOf(req.params.id);
-    if (recipeIndex === -1) return next(createError(404, 'not found'));
     recipeArray.splice(recipeIndex, 1);
-    profile.recipes = recipeArray;
-    return Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+    return Profile.findByIdAndUpdate( profile._id, { $set: { recipes: recipeArray } }, { new: true} );
   })
   .then( () => {
     Recipe.findByIdAndRemove(req.params.id);
@@ -77,7 +74,7 @@ recipeRouter.put('/api/recipe/:id', bearerAuth, jsonParser, function(req, res, n
   debug('PUT: /api/recipe/:id');
 
   if(req._body !== true) return next(createError(400, 'nothing to update'));
-  Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true } )
   .then( recipe => {
     res.json(recipe);
   })

@@ -1,7 +1,6 @@
 'use strict';
 
-const debug = require('debug')('cornucopia:recipe-router');
-const Promise = require('bluebird');
+const debug = require('debug')('cornucopia:upvote-router');
 const createError = require('http-errors');
 const jsonParser = require('body-parser').json();
 const Router = require('express').Router;
@@ -17,25 +16,24 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
   debug('POST: /api/comment/:recipeID');
 
   if (!req._body) return next(createError(400, 'request body expected'));
-  if (!req.user) return next(createError(400, 'request user expected'));
 
   req.body.recipeID = req.params.recipeID;
-  Profile.findOne( {userID: req.user._id} )
+  Profile.findOne( { userID: req.user._id } )
   .then( profile => {
     req.body.commenterProfileID = profile._id;
     new ResComment(req.body).save()
-    .then(comment => {
+    .then( comment => {
       profile.comments.push(comment._id);
       profile.save();
       Recipe.findById(req.params.recipeID)
-      .then(recipe => {
+      .then( recipe => {
         recipe.comments.push(comment._id);
         recipe.save();
         return recipe;
       })
-      .then(recipe => {
+      .then( recipe => {
         Profile.findById(comment.commenterProfileID)
-        .then(profile => {
+        .then( profile => {
           let response = { profile: profile, recipe: recipe, comment: comment };
           res.json(response);
         })
@@ -52,7 +50,7 @@ commentRouter.get('/api/comment/:id', function(req, res, next) {
   debug('GET: /api/comment/:id');
 
   ResComment.findById(req.params.id)
-  .then(comment => res.json(comment))
+  .then( comment => res.json(comment))
   .catch(next);
 });
 
@@ -61,7 +59,7 @@ commentRouter.get('/api/allcomments/:profileID', function(req, res, next) {
 
   Profile.findById(req.params.profileID)
   .populate('comment')
-  .then(comment => res.json(comment))
+  .then( comment => res.json(comment))
   .catch(next);
 });
 
@@ -70,7 +68,7 @@ commentRouter.get('/api/allrecipecomments/:recipeID', function(req, res, next) {
 
   Recipe.findById(req.params.recipeID)
   .populate('comment')
-  .then(comment => res.json(comment))
+  .then( comment => res.json(comment))
   .catch(next);
 });
 
@@ -78,15 +76,13 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/comment/:id');
 
   ResComment.findById(req.params.id)
-  .then(comment => {
+  .then( comment => {
     Profile.findById(comment.commenterProfileID)
     .then( profile => {
       let commentArray = profile.comments;
       let commentIndex = commentArray.indexOf(comment._id);
-      if (commentIndex === -1) return next(createError(404, 'not found'));
       commentArray.splice(commentIndex, 1);
-      profile.comments = commentArray;
-      Profile.findByIdAndUpdate( profile._id, profile, { new: true} )
+      Profile.findByIdAndUpdate( profile._id, { $set: { comments: commentArray } }, { new: true } )
       .catch(next);
       return comment;
     })
@@ -95,12 +91,10 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
 
       let commentArray = recipe.comments;
       let commentIndex = commentArray.indexOf(comment._id);
-      if (commentIndex === -1) return next(createError(404, 'not found'));
 
       commentArray.splice(commentIndex, 1);
-      recipe.comments = commentArray;
 
-      Recipe.findByIdAndUpdate( recipe._id, recipe, { new: true} )
+      Recipe.findByIdAndUpdate( recipe._id, { $set: { comments: commentArray } }, { new: true} )
       .then( () => ResComment.findByIdAndRemove(comment._id))
       .then( () => {
         res.status(204).send();

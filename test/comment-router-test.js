@@ -9,8 +9,7 @@ const ResComment = require('../model/comment.js');
 
 require('../server.js');
 
-const url = `http://localhost:3003`;
-// const url = `http://localhost:${process.env.PORT}`;
+const url = `http://localhost:${process.env.PORT}`;
 
 const exampleUser = {
   username: 'testusername',
@@ -19,14 +18,14 @@ const exampleUser = {
 };
 
 const exampleProfile = {
-  name: 'example name',
-  profilePicURI: 'example uri'
+  name: 'comment example name',
+  profilePicURI: 'upvote example uri'
 };
 
 const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
-  picURI: 'example recipe picURI',
+  recipeName: 'example recipe recipeName',
   categories: ['example cat 1', 'example cat 2']
 };
 
@@ -36,7 +35,6 @@ const exampleComment = {
 
 describe('Comment Routes', () => {
   beforeEach( done => {
-    let password = exampleUser.password;
     new User(exampleUser)
     .generatePasswordHash(exampleUser.password)
     .then( user => user.save())
@@ -44,7 +42,7 @@ describe('Comment Routes', () => {
       this.tempUser = user;
       return user.generateToken();
     })
-    .then(token => {
+    .then( token => {
       this.tempToken = token;
       return;
     })
@@ -54,21 +52,19 @@ describe('Comment Routes', () => {
       .then( profile => {
         this.tempProfile = profile;
         done();
-      })
+      });
     })
     .catch( err => done(err));
   });
-  beforeEach(done => {
+  beforeEach( done => {
     exampleRecipe.profileID = this.tempProfile._id;
     new Recipe(exampleRecipe).save()
-    .then(recipe => {
+    .then( recipe => {
       this.tempRecipe = recipe;
       this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, this.tempProfile, {new: true})
+      return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, {new: true} );
     })
-    .then(profile => {
-      done();
-    })
+    .then( () => done())
     .catch(done);
   });
   afterEach( done => {
@@ -134,11 +130,11 @@ describe('Comment Routes', () => {
     });
   });
   describe('GET /api/comment/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleComment.commenterProfileID = this.tempProfile._id;
       exampleComment.recipeID = this.tempRecipe._id;
       new ResComment(exampleComment).save()
-      .then(comment => {
+      .then( comment => {
         this.tempComment = comment;
         done();
       })
@@ -160,7 +156,7 @@ describe('Comment Routes', () => {
     describe('without a valid comment id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/comment/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -168,7 +164,7 @@ describe('Comment Routes', () => {
     });
   });
   describe('GET /api/allcomments/:profileID', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleComment.commenterProfileID = this.tempProfile._id;
       exampleComment.recipeID = this.tempRecipe._id;
       new ResComment(exampleComment).save()
@@ -198,7 +194,7 @@ describe('Comment Routes', () => {
     describe('without a valid user id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allcomments/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -207,8 +203,8 @@ describe('Comment Routes', () => {
     describe('without a valid profile id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allcomments/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -216,11 +212,11 @@ describe('Comment Routes', () => {
     });
   });
   describe('GET /api/allrecipecomments/:recipeID', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleComment.commenterProfileID = this.tempProfile._id;
       exampleComment.recipeID = this.tempRecipe._id;
       new ResComment(exampleComment).save()
-      .then(comment => {
+      .then( comment => {
         this.tempComment = comment;
         this.tempRecipe.comments.push(comment._id);
         this.tempRecipe.save();
@@ -246,7 +242,7 @@ describe('Comment Routes', () => {
     describe('without a valid user id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipecomments/alskdjf`)
-        .end(err => {
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -255,8 +251,8 @@ describe('Comment Routes', () => {
     describe('without a valid recipe id', () => {
       it('should return a 404 error', done => {
         request.get(`${url}/api/allrecipecomments/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
@@ -264,11 +260,11 @@ describe('Comment Routes', () => {
     });
   });
   describe('PUT /api/comment/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleComment.commenterProfileID = this.tempProfile._id;
       exampleComment.recipeID = this.tempRecipe._id;
       new ResComment(exampleComment).save()
-      .then(comment => {
+      .then( comment => {
         this.tempComment = comment;
         done();
       })
@@ -280,7 +276,7 @@ describe('Comment Routes', () => {
     describe('with a valid comment id and body', () => {
       it('should return an updated recipe', done => {
         request.put(`${url}/api/comment/${this.tempComment._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           if (err) return done(err);
@@ -293,7 +289,7 @@ describe('Comment Routes', () => {
     describe('without a valid comment id', () => {
       it('should return a 404 error', done => {
         request.put(`${url}/api/comment/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .send(updated)
         .end((err, res) => {
           expect(err.status).to.equal(404);
@@ -305,7 +301,7 @@ describe('Comment Routes', () => {
     describe('without a valid body', () => {
       it('should return a 400 error', done => {
         request.put(`${url}/api/comment/${this.tempComment._id}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           expect(err.status).to.equal(400);
           expect(res.text).to.equal('nothing to update');
@@ -315,11 +311,11 @@ describe('Comment Routes', () => {
     });
   });
   describe('DELETE /api/comment/:id', () => {
-    beforeEach(done => {
+    beforeEach( done => {
       exampleComment.commenterProfileID = this.tempProfile._id;
       exampleComment.recipeID = this.tempRecipe._id;
       new ResComment(exampleComment).save()
-      .then(comment => {
+      .then( comment => {
         this.tempComment = comment;
         this.tempRecipe.comments.push(comment._id);
         this.tempRecipe.save();
@@ -332,21 +328,21 @@ describe('Comment Routes', () => {
     describe('with a valid comment id', () => {
       it('should return a 204 status', done => {
         request.delete(`${url}/api/comment/${this.tempComment._id.toString()}`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(204);
           ResComment.findById(this.tempComment._id)
-          .catch(err => {
+          .catch( err => {
             expect(err).to.be(404);
           });
           Profile.findById(this.tempProfile._id)
-          .then(profile => {
+          .then( profile => {
             expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
           })
           .catch(done);
           Recipe.findById(this.tempRecipe._id)
-          .then(recipe => {
+          .then( recipe => {
             expect(recipe.comments.indexOf(this.tempComment._id)).to.equal(-1);
           })
           .catch(done);
@@ -357,8 +353,8 @@ describe('Comment Routes', () => {
     describe('without a valid comment id', () => {
       it('should return a 404 error', done => {
         request.delete(`${url}/api/comment/n0taval1d1d00p5`)
-        .set({ Authorization: `Bearer ${this.tempToken}`})
-        .end((err, res) => {
+        .set( { Authorization: `Bearer ${this.tempToken}`} )
+        .end( err => {
           expect(err.status).to.equal(404);
           done();
         });
