@@ -58,6 +58,6 @@ authRouter.get('/', function(req, res, next) {
   next();
 });
 
-authRouter.get('/', function(req, res, next) {
-  res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg');
+authRouter.get('/', function(req, res) {
+  res.send('http://cdn.wonderfulengineering.com/wp-content/uploads/2014/03/high-resolution-wallpapers-7.jpg').end();
 });
