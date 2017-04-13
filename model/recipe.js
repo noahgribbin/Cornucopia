@@ -8,6 +8,7 @@ const recipeSchema = Schema({
   ingredients: [{ type: String, required: true}],
   instructions: { type: String, required: true },
   recipeName: { type: String },
+  recipePicURI: {type: String},
   categories: [{ type: String, required: true }],
   comments: [{ type: Schema.Types.ObjectId, unique: true, ref: 'comment'}],
   upvotes: [{ type: Schema.Types.ObjectId, unique: true, ref: 'upvote' }],
