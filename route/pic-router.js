@@ -20,6 +20,15 @@ const dataDir = `${__dirname}/../data`;
 const upload = multer({dest: dataDir});
 const picRouter = module.exports = require('express').Router();
 
+function s3upload(params) {
+  return new Promise((resolve, reject) => {
+    s3.upload(params, (err, s3data) => {
+      if (err) return reject(err);
+      resolve(s3data);
+    });
+  });
+}
+
 picRouter.post('./api/pic', bearerAuth, upload.single('file'), function(req, res, next){
   debug('POST /api/pic');
 
@@ -31,15 +40,10 @@ picRouter.post('./api/pic', bearerAuth, upload.single('file'), function(req, res
     ACL: 'public-read',
     Bucket: process.env.AWS_BUCKET,
     Key: `${req.file.filename}${ext}`,
-    Body: fs.createReadStream(req.file.path),
+    Body: fs.createReadStream(req.file.path)
   };
 
-  return new Promise((resolve, reject) => {
-    s3.upload(params, (err, s3data) => {
-      if (err) return reject(err);
-      resolve(s3data);
-    });
-  })
+  s3upload(params)
   .then(s3data => {
     del([`${dataDir}/*`]);
     let picData = {
