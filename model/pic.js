@@ -4,8 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const picSchema = Schema({
-  profileID: { type: Schema.Types.ObjectId, required: true },
-  recipeID: { type: Schema.Types.ObjectId, required: false },
+  theID: { type: Schema.Types.ObjectId, required: true },
   imageURI: { type: String, required: true, unique: true },
   objectKey: { type: String, required: true, unique: true }
 });

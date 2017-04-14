@@ -6,21 +6,24 @@ const del = require('del');
 const AWS = require('aws-sdk');
 const multer = require('multer');
 const createError = require('http-errors');
-const debug = require('debug')('Cornucopia:pic-router');
+const debug = require('debug')('cornucopia:pic-router');
 
 const Pic = require('../model/pic.js');
 const Recipe = require('../model/recipe.js');
 const Profile = require('../model/profile.js');
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
+const Router = require('express').Router;
 
-AWS.config.setPromiseDependency(require('bluebird'));
+AWS.config.setPromisesDependency(require('bluebird'));
 
-const s3 = new AWS.s3();
+const s3 = new AWS.S3();
 const dataDir = `${__dirname}/../data`;
 const upload = multer({dest: dataDir});
-const picRouter = module.exports = require('express').Router();
+const picRouter = module.exports = Router();
 
-function s3upload(params) {
+function s3uploadProm(params) {
+  debug('s3uploadProm');
+
   return new Promise((resolve, reject) => {
     s3.upload(params, (err, s3data) => {
       if (err) return reject(err);
@@ -29,13 +32,13 @@ function s3upload(params) {
   });
 }
 
-picRouter.post('./api/pic', bearerAuth, upload.single('file'), function(req, res, next){
-  debug('POST /api/pic');
+picRouter.post('/api/profile/:profileID/pic', bearerAuth, upload.single('image'), function(req, res, next) {
+  debug('POST /api/profile/:profileID/pic');
 
   if(!req.file) return next(createError(400, 'file not found!'));
+  if (!req.file.path) return next(createError(500, 'file not saved'));
 
   let ext = path.extname(req.file.originalname);
-
   let params = {
     ACL: 'public-read',
     Bucket: process.env.AWS_BUCKET,
@@ -43,35 +46,57 @@ picRouter.post('./api/pic', bearerAuth, upload.single('file'), function(req, res
     Body: fs.createReadStream(req.file.path)
   };
 
-  s3upload(params)
+  Profile.findById(req.params.profileID)
+  .then( () => s3uploadProm(params))
   .then(s3data => {
     del([`${dataDir}/*`]);
     let picData = {
-      profileID: req.body.profileID,
-      recipeID: req.body.recipeID,
+      theID: req.params.profileID,
       objectKey: s3data.Key,
-      imageURI: s3data.Location,
+      imageURI: s3data.Location
     };
     return new Pic(picData).save();
   })
-  .then(pic => {
-    let update = {};
-    if (pic.recipeID) {
-      update.recipePicURI = pic.imageURI;
-      Recipe.findByIdAndUpdate(pic.recipeID, update, { new: true })
-      .catch(next);
-    }
-    if (pic.profileID) {
-      update.profilePicURI = pic.imageURI;
-      Profile.findByIdAndUpdate(pic.profileID, update, { new: true })
-      .catch(next);
-    }
-  })
+  .then(pic => res.json(pic))
   .catch(next);
 });
 
+// picRouter.post('/api/profile/:profileID/pic', bearerAuth, upload.single('image'), function(req, res, next){
+//   debug('POST /api/profile/:profileID/pic');
+//
+//   if(!req.file) return next(createError(400, 'file not found!'));
+//   if (!req.file.path) return next(createError(500, 'file not saved'));
+//
+//   let ext = path.extname(req.file.originalname);
+//   let params = {
+//     ACL: 'public-read',
+//     Bucket: process.env.AWS_BUCKET,
+//     Key: `${req.file.filename}${ext}`,
+//     Body: fs.createReadStream(req.file.path)
+//   };
+//
+//   Profile.findById(req.params.theID)
+//   .then( () => s3uploadProm(params))
+//   .then(s3data => {
+//     del([`${dataDir}/*`]);
+//     let picData = {
+//       theID: req.params.theID,
+//       objectKey: s3data.Key,
+//       imageURI: s3data.Location
+//     };
+//     return new Pic(picData).save();
+//   })
+//   .then(pic => {
+//     let update = {};
+//     update.profilePicURI = pic.theID;
+//     Profile.findByIdAndUpdate(pic.theID, update, { new: true })
+//     .then(profile => res.json(profile));
+//   })
+//   .catch(next);
+// });
+
 picRouter.get('/api/pic/:picID', function(req, res, next) {
-  debug('GET: /api/pic/:id');
+  debug('GET: /api/pic/:picID');
 
   Pic.findById(req.params.picID)
   .then(pic => res.json(pic))
@@ -79,22 +104,14 @@ picRouter.get('/api/pic/:picID', function(req, res, next) {
 });
 
 picRouter.delete('/api/pic/:picID', function(req, res, next) {
-  debug('DELETE: /api/pic/:id');
+  debug('DELETE: /api/pic/:picID');
 
-  Pic.findById(req.params.picID)
-  .then(pic => {
-    let update = {};
-    if (pic.recipeID) {
-      update.recipePicURI = null;
-      Recipe.findByIdAndUpdate(pic.recipeID, update, { new: true });
-    }
-    if (pic.profileID) {
-      update.profilePicURI = null;
-      Profile.findByIdAndUpdate(pic.profileID, update, { new: true });
-    }
-  })
-  .catch(next);
   Pic.findByIdAndRemove(req.params.picID)
+  .then( () => {
+    let update = {};
+    update.profilePicURI = null;
+    return Profile.findByIdAndUpdate(req.params.theID, update, { new: true });
+  })
   .then( () => res.status(204).send())
   .catch(next);
 });

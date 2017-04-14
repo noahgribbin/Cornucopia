@@ -30,7 +30,7 @@ const exampleRecipe = {
 };
 
 const examplePic = {
-  file: `${__dirname}/data/tester.png`
+  image: `${__dirname}/data/tester.png`
 };
 
 describe('Pic Routes', () => {
@@ -84,20 +84,16 @@ describe('Pic Routes', () => {
     })
     .catch(done);
   });
-  describe('POST /api/pic', () => {
+  describe('POST: /api/profile/:profileID/pic', () => {
     describe.only('with a valid body and id', () => {
-      it('should return a pic', done => {
-        examplePic.recipeID = this.tempRecipe._id;
-        examplePic.profileID = this.tempProfile._id;
-        request.post(`${url}/api/pic`)
+      it('should return a profile pic', done => {
+        request.post(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
         .set( { Authorization: `Bearer ${this.tempToken}` } )
-        .field('recipeID', examplePic.recipeID)
-        .attach('file', examplePic.file)
+        .attach('image', examplePic.image)
         .end((err, res) => {
           if(err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.pic.profileID).to.equal(this.tempProfile._id.toString());
-          expect(res.body.pic.recipeID).to.equal(this.tempRecipe._id.toString());
+          expect(res.body.theID).to.equal(this.tempProfile._id.toString());
           done();
         });
       });

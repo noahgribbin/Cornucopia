@@ -9,8 +9,11 @@ const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
+const Pic = require('../model/pic.js');
 const ResComment = require('../model/comment.js');
 const Upvote = require('../model/upvote.js');
+const picRouter = require('./pic-router.js');
+
 
 const profileRouter = module.exports = Router();
 
@@ -57,6 +60,7 @@ profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
   .then( () => Upvote.remove( { voterProfileID: req.params.id } ))
   .then( () => Profile.remove( { userID: req.user._id } ))
   .then( () => User.remove( { username: req.user.username } ))
+  .then( () => Pic.remove( { theID: req.params.id } ))
   .then( () => res.status(204).send())
   .catch(next);
 });

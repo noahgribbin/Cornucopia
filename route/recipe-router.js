@@ -8,6 +8,9 @@ const Router = require('express').Router;
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const Recipe = require('../model/recipe.js');
+const Pic = require('../model/pic.js');
+const ResComment = require('../model/comment.js');
+const Upvote = require('../model/upvote.js');
 
 const recipeRouter = module.exports = Router();
 
@@ -63,6 +66,7 @@ recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
     recipeArray.splice(recipeIndex, 1);
     return Profile.findByIdAndUpdate( profile._id, { $set: { recipes: recipeArray } }, { new: true} );
   })
+  .then( () => ResComment.remove( { recipeID: req.params.id} ))
   .then( () => {
     Recipe.findByIdAndRemove(req.params.id);
     res.status(204).send();
