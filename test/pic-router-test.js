@@ -26,7 +26,10 @@ const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
   recipeName: 'example recipe recipeName',
-  categories: ['example cat 1', 'example cat 2']
+  categories: ['example cat 1', 'example cat 2'],
+  prepTime: 'prep time',
+  cookTime: 'cook time',
+  description: 'description'
 };
 
 const examplePic = {
@@ -77,24 +80,78 @@ describe('Pic Routes', () => {
     .then( () => {
       delete exampleProfile.userID;
       delete exampleRecipe.profileID;
-      delete examplePic.recipeID;
-      delete examplePic.profileID;
+      delete examplePic.theID;
       this.tempProfile.recipes = [];
       done();
     })
     .catch(done);
   });
-  describe('POST: /api/profile/:profileID/pic', () => {
-    describe.only('with a valid body and id', () => {
-      it('should return a profile pic', done => {
-        request.post(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
-        .set( { Authorization: `Bearer ${this.tempToken}` } )
-        .attach('image', examplePic.image)
-        .end((err, res) => {
-          if(err) return done(err);
-          expect(res.status).to.equal(200);
-          expect(res.body.theID).to.equal(this.tempProfile._id.toString());
-          done();
+  describe.only('Pic Routes', () => {
+    describe('POST: /api/profile/:theID/pic', () => {
+      describe('with a valid image and profile ID', () => {
+        it('should return a profile pic', done => {
+          request.post(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
+          .set( { Authorization: `Bearer ${this.tempToken}` } )
+          .attach('image', examplePic.image)
+          .end((err, res) => {
+            if(err) return done(err);
+            expect(res.status).to.equal(200);
+            expect(res.body.profilePicURI).to.equal(this.tempProfile._id.toString());
+            done();
+          });
+        });
+      });
+    });
+    describe('POST: /api/recipe/:theID/pic', () => {
+      describe('with a valid image and profile ID', () => {
+        it('should return a recipe pic', done => {
+          request.post(`${url}/api/recipe/${this.tempRecipe._id.toString()}/pic`)
+          .set( { Authorization: `Bearer ${this.tempToken}` } )
+          .attach('image', examplePic.image)
+          .end((err, res) => {
+            if (err) return done(err);
+            expect(res.status).to.equal(200);
+            expect(res.body.recipePicURI).to.equal(this.tempRecipe._id.toString());
+            done();
+          });
+        });
+      });
+    });
+    describe('DELETE: /api/profile/:theID/pic', () => {
+      describe('with a valid profileID', () => {
+        it('should remove the pic and pic URI in profile', done => {
+          request.post(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
+          .set( { Authorization: `Bearer ${this.tempToken}` } )
+          .attach('image', examplePic.image)
+          .end((err, res) => {
+            if (err) return done(err);
+            request.delete(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
+            .set( { Authorization: `Bearer ${this.tempToken}`} )
+            .end((err, res) => {
+              if (err) return done(err);
+              expect(res.status).to.equal(204);
+              done();
+            });
+          });
+        });
+      });
+    });
+    describe('DELETE: /api/recipe/:theID/pic', () => {
+      describe('with a valid recipeID', () => {
+        it('should remove the pic and pic URI in recipe', done => {
+          request.post(`${url}/api/recipe/${this.tempRecipe._id.toString()}/pic`)
+          .set( { Authorization: `Bearer ${this.tempToken}` } )
+          .attach('image', examplePic.image)
+          .end((err, res) => {
+            if (err) return done(err);
+            request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}/pic`)
+            .set( { Authorization: `Bearer ${this.tempToken}`} )
+            .end((err, res) => {
+              if (err) return done(err);
+              expect(res.status).to.equal(204);
+              done();
+            });
+          });
         });
       });
     });
