@@ -45,7 +45,6 @@ userSchema.methods.generateFindHash = function() {
 
   return new Promise((resolve, reject) => {
     let tries = 0;
-
     _generateFindHash.call(this);
     function _generateFindHash() {
       this.findHash = crypto.randomBytes(32).toString('hex');

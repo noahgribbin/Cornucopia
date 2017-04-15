@@ -14,6 +14,7 @@ const profileRouter = require('./route/profile-router.js');
 const recipeRouter = require('./route/recipe-router.js');
 const commentRouter = require('./route/comment-router.js');
 const upvoteRouter = require('./route/upvote-router.js');
+const picRouter = require('./route/pic-router.js');
 
 dotenv.load();
 
@@ -27,6 +28,7 @@ app.use(morgan('dev'));
 app.use(authRouter);
 app.use(profileRouter);
 app.use(recipeRouter);
+app.use(picRouter);
 app.use(commentRouter);
 app.use(upvoteRouter);
 app.use(errors);
