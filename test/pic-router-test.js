@@ -123,7 +123,7 @@ describe('Pic Routes', () => {
           request.post(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
           .set( { Authorization: `Bearer ${this.tempToken}` } )
           .attach('image', examplePic.image)
-          .end((err, res) => {
+          .end((err) => {
             if (err) return done(err);
             request.delete(`${url}/api/profile/${this.tempProfile._id.toString()}/pic`)
             .set( { Authorization: `Bearer ${this.tempToken}`} )
@@ -142,7 +142,7 @@ describe('Pic Routes', () => {
           request.post(`${url}/api/recipe/${this.tempRecipe._id.toString()}/pic`)
           .set( { Authorization: `Bearer ${this.tempToken}` } )
           .attach('image', examplePic.image)
-          .end((err, res) => {
+          .end((err) => {
             if (err) return done(err);
             request.delete(`${url}/api/recipe/${this.tempRecipe._id.toString()}/pic`)
             .set( { Authorization: `Bearer ${this.tempToken}`} )

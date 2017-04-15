@@ -8,9 +8,7 @@ const Router = require('express').Router;
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const Recipe = require('../model/recipe.js');
-const Pic = require('../model/pic.js');
 const ResComment = require('../model/comment.js');
-const Upvote = require('../model/upvote.js');
 
 const recipeRouter = module.exports = Router();
 

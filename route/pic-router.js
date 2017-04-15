@@ -117,7 +117,7 @@ picRouter.delete('/api/profile/:theID/pic', function(req, res, next) {
     let params = {
       Bucket: process.env.AWS_BUCKET,
       Key: pic.objectKey,
-    }
+    };
     return s3.deleteObject(params).promise();
   })
   .then( () => {
@@ -137,7 +137,7 @@ picRouter.delete('/api/recipe/:theID/pic', function(req, res, next) {
     let params = {
       Bucket: process.env.AWS_BUCKET,
       Key: pic.objectKey,
-    }
+    };
     return s3.deleteObject(params).promise();
   })
   .then( () => {

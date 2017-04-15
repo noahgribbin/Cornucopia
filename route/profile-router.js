@@ -12,7 +12,6 @@ const Recipe = require('../model/recipe.js');
 const Pic = require('../model/pic.js');
 const ResComment = require('../model/comment.js');
 const Upvote = require('../model/upvote.js');
-const picRouter = require('./pic-router.js');
 
 
 const profileRouter = module.exports = Router();
