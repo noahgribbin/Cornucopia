@@ -48,7 +48,7 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
 
   if (req._body !== true) return next(createError(400, 'nothing to update'));
 
-  Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  Profile.findByIdAndUpdate(req.params.id, req.body, { new: true } )
     .then( profile => res.json(profile))
     .catch(next);
 });
@@ -56,7 +56,7 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
 profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/profile/:id');
   Recipe.remove( { profileID: req.params.id } )
-  .then( () => ResComment.remove( { commenterProfileID: req.params.id} ))
+  .then( () => ResComment.remove( { commenterProfileID: req.params.id } ))
   .then( () => Upvote.remove( { voterProfileID: req.params.id } ))
   .then( () => Profile.remove( { userID: req.user._id } ))
   .then( () => User.remove( { username: req.user.username } ))

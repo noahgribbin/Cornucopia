@@ -26,7 +26,10 @@ const exampleRecipe = {
   ingredients: ['example ingredient 1', 'example ingredient 2', 'example ingredient 3'],
   instructions: 'example recipe instructions',
   recipeName: 'example recipe recipeName',
-  categories: ['example cat 1', 'example cat 2']
+  categories: ['example cat 1', 'example cat 2'],
+  prepTime: 'prep time',
+  cookTime: 'cook time',
+  description: 'description'
 };
 
 const exampleComment = {
