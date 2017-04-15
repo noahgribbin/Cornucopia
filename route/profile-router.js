@@ -9,8 +9,10 @@ const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Profile = require('../model/profile.js');
 const User = require('../model/user.js');
 const Recipe = require('../model/recipe.js');
+const Pic = require('../model/pic.js');
 const ResComment = require('../model/comment.js');
 const Upvote = require('../model/upvote.js');
+
 
 const profileRouter = module.exports = Router();
 
@@ -45,7 +47,7 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
 
   if (req._body !== true) return next(createError(400, 'nothing to update'));
 
-  Profile.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  Profile.findByIdAndUpdate(req.params.id, req.body, { new: true } )
     .then( profile => res.json(profile))
     .catch(next);
 });
@@ -53,10 +55,11 @@ profileRouter.put('/api/profile/:id', bearerAuth, jsonParser, function(req, res,
 profileRouter.delete('/api/profile/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/profile/:id');
   Recipe.remove( { profileID: req.params.id } )
-  .then( () => ResComment.remove( { commenterProfileID: req.params.id} ))
+  .then( () => ResComment.remove( { commenterProfileID: req.params.id } ))
   .then( () => Upvote.remove( { voterProfileID: req.params.id } ))
   .then( () => Profile.remove( { userID: req.user._id } ))
   .then( () => User.remove( { username: req.user.username } ))
+  .then( () => Pic.remove( { theID: req.params.id } ))
   .then( () => res.status(204).send())
   .catch(next);
 });
