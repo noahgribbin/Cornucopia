@@ -54,6 +54,16 @@ recipeRouter.get('/api/allrecipes/:profileID', function(req, res, next) {
   .catch(next);
 });
 
+recipeRouter.get('/api/allrecipes', function(req, res, next) {
+  debug('GET: /api/allrecipes');
+
+  Recipe.find({})
+  .then(recipes => {
+    res.json(recipes);
+  })
+  .catch(next);
+});
+
 recipeRouter.delete('/api/recipe/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/recipe/:id');
 
