@@ -100,7 +100,6 @@ describe('Upvote Routes', () => {
           if(err) return done(err);
           let date = new Date(res.body.created).toString();
           expect(res.status).to.equal(200);
-          expect(res.body.profile.upvotes[0].toString()).to.equal(res.body.upvote._id.toString());
           expect(res.body.recipe.upvotes[0].toString()).to.equal(res.body.upvote._id.toString());
           expect(res.body.upvote.upvote).to.equal(exampleUpvote.upvote);
           expect(res.body.upvote.voterProfileID).to.equal(this.tempProfile._id.toString());
@@ -176,8 +175,6 @@ describe('Upvote Routes', () => {
         this.tempUpvote = upvote;
         this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
-        this.tempProfile.upvotes.push(upvote._id);
-        this.tempProfile.save();
         done();
       })
       .catch(done);
@@ -188,8 +185,6 @@ describe('Upvote Routes', () => {
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.upvotes[0].toString()).to.equal(this.tempUpvote._id.toString());
-          expect(res.body.upvotes.length).to.equal(1);
           expect(res.body._id.toString()).to.equal(this.tempProfile._id.toString());
           done();
         });
@@ -224,8 +219,6 @@ describe('Upvote Routes', () => {
         this.tempUpvote = upvote;
         this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
-        this.tempProfile.upvotes.push(upvote._id);
-        this.tempProfile.save();
         done();
       })
       .catch(done);
@@ -323,8 +316,6 @@ describe('Upvote Routes', () => {
         this.tempUpvote = upvote;
         this.tempRecipe.upvotes.push(upvote._id);
         this.tempRecipe.save();
-        this.tempProfile.upvotes.push(upvote._id);
-        this.tempProfile.save();
         done();
       })
       .catch(done);
@@ -340,11 +331,6 @@ describe('Upvote Routes', () => {
           .catch(err => {
             expect(err).to.be(404);
           });
-          Profile.findById(this.tempProfile._id)
-          .then( profile => {
-            expect(profile.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);
-          })
-          .catch(done);
           Recipe.findById(this.tempRecipe._id)
           .then( recipe => {
             expect(recipe.upvotes.indexOf(this.tempUpvote._id)).to.equal(-1);

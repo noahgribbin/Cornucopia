@@ -64,10 +64,8 @@ describe('Comment Routes', () => {
     new Recipe(exampleRecipe).save()
     .then( recipe => {
       this.tempRecipe = recipe;
-      this.tempProfile.recipes.push(this.tempRecipe._id);
-      return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: { recipes: this.tempProfile.recipes } }, {new: true} );
+      done();
     })
-    .then( () => done())
     .catch(done);
   });
   afterEach( done => {
@@ -82,7 +80,6 @@ describe('Comment Routes', () => {
       delete exampleRecipe.profileID;
       delete exampleComment.recipeID;
       delete exampleComment.commenterProfileID;
-      this.tempProfile.recipes = [];
       done();
     })
     .catch(done);
@@ -99,7 +96,6 @@ describe('Comment Routes', () => {
           if(err) return done(err);
           let date = new Date(res.body.created).toString();
           expect(res.status).to.equal(200);
-          expect(res.body.profile.comments[0].toString()).to.equal(res.body.comment._id.toString());
           expect(res.body.recipe.comments[0].toString()).to.equal(res.body.comment._id.toString());
           expect(res.body.comment.comment).to.equal(exampleComment.comment);
           expect(res.body.comment.commenterProfileID).to.equal(this.tempProfile._id.toString());
@@ -175,8 +171,6 @@ describe('Comment Routes', () => {
         this.tempComment = comment;
         this.tempRecipe.comments.push(comment._id);
         this.tempRecipe.save();
-        this.tempProfile.comments.push(comment._id);
-        this.tempProfile.save();
         done();
       })
       .catch(done);
@@ -187,8 +181,6 @@ describe('Comment Routes', () => {
         .end((err, res) => {
           if (err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.comments[0].toString()).to.equal(this.tempComment._id.toString());
-          expect(res.body.comments.length).to.equal(1);
           expect(res.body._id.toString()).to.equal(this.tempProfile._id.toString());
           done();
         });
@@ -223,8 +215,6 @@ describe('Comment Routes', () => {
         this.tempComment = comment;
         this.tempRecipe.comments.push(comment._id);
         this.tempRecipe.save();
-        this.tempProfile.comments.push(comment._id);
-        this.tempProfile.save();
         done();
       })
       .catch(done);
@@ -322,8 +312,6 @@ describe('Comment Routes', () => {
         this.tempComment = comment;
         this.tempRecipe.comments.push(comment._id);
         this.tempRecipe.save();
-        this.tempProfile.comments.push(comment._id);
-        this.tempProfile.save();
         done();
       })
       .catch(done);
@@ -339,11 +327,6 @@ describe('Comment Routes', () => {
           .catch( err => {
             expect(err).to.be(404);
           });
-          Profile.findById(this.tempProfile._id)
-          .then( profile => {
-            expect(profile.comments.indexOf(this.tempComment._id)).to.equal(-1);
-          })
-          .catch(done);
           Recipe.findById(this.tempRecipe._id)
           .then( recipe => {
             expect(recipe.comments.indexOf(this.tempComment._id)).to.equal(-1);
