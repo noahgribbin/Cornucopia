@@ -23,8 +23,8 @@ upvoteRouter.post('/api/upvote/:recipeID', bearerAuth, jsonParser, function(req,
     req.body.voterProfileID = profile._id;
     new Upvote(req.body).save()
     .then( upvote => {
-      profile.upvotes.push(upvote._id);
-      profile.save();
+      // profile.upvotes.push(upvote._id);
+      // profile.save();
       Recipe.findById(req.params.recipeID)
       .then( recipe => {
         recipe.upvotes.push(upvote._id);
@@ -76,23 +76,30 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/upvote/:id');
 
   Upvote.findById(req.params.id)
-  .then( upvote => {
-    Profile.findById(upvote.voterProfileID)
-    .then( profile => {
-      let upvoteArray = profile.upvotes;
-      let upvoteIndex = upvoteArray.indexOf(upvote._id);
-      upvoteArray.splice(upvoteIndex, 1);
-      Profile.findByIdAndUpdate( profile._id, { $set: { upvotes: upvoteArray } }, { new: true} )
-      .catch(next);
-      return upvote;
-    })
-    .then( upvote => Recipe.findById(upvote.recipeID))
+  .then(upvote => {
+    let tempUpvote = upvote;
+    return tempUpvote;
+  })
+  // .then( upvote => {
+    // Profile.findById(upvote.voterProfileID)
+    // .then( profile => {
+    //   let upvoteArray = profile.upvotes;
+    //   let upvoteIndex = upvoteArray.indexOf(upvote._id);
+    //   upvoteArray.splice(upvoteIndex, 1);
+    //   Profile.findByIdAndUpdate( profile._id, { $set: { upvotes: upvoteArray } }, { new: true} )
+    //   .catch(next);
+    //   return upvote;
+    // })
+  .then(tempUpvote => {
+    console.log('*******************************************')
+    console.log('TEMP UPVOTE', tempUpvote);
+    Recipe.findById(tempUpvote.recipeID)
     .then( recipe => {
       let upvoteArray = recipe.upvotes;
-      let upvoteIndex = upvoteArray.indexOf(upvote._id);
+      let upvoteIndex = upvoteArray.indexOf(tempUpvote._id);
       upvoteArray.splice(upvoteIndex, 1);
       Recipe.findByIdAndUpdate( recipe._id, { $set: { upvotes: upvoteArray } }, { new: true} )
-      .then( () => Upvote.findByIdAndRemove(upvote._id))
+      .then( () => Upvote.findByIdAndRemove(tempUpvote._id))
       .then( () => {
         res.status(204).send();
       })

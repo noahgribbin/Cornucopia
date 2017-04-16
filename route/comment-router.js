@@ -23,8 +23,8 @@ commentRouter.post('/api/comment/:recipeID', bearerAuth, jsonParser, function(re
     req.body.commenterProfileID = profile._id;
     new ResComment(req.body).save()
     .then( comment => {
-      profile.comments.push(comment._id);
-      profile.save();
+      // profile.comments.push(comment._id);
+      // profile.save();
       Recipe.findById(req.params.recipeID)
       .then( recipe => {
         recipe.comments.push(comment._id);
@@ -77,33 +77,37 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
 
   ResComment.findById(req.params.id)
   .then( comment => {
-    Profile.findById(comment.commenterProfileID)
-    .then( profile => {
-      let commentArray = profile.comments;
-      let commentIndex = commentArray.indexOf(comment._id);
-      commentArray.splice(commentIndex, 1);
-      Profile.findByIdAndUpdate( profile._id, { $set: { comments: commentArray } }, { new: true } )
-      .catch(next);
-      return comment;
-    })
-    .then( comment => Recipe.findById(comment.recipeID))
-    .then( recipe => {
+    let tempComment = comment;
+    return tempComment;
+  })
+    // Profile.findById(comment.commenterProfileID)
+    // .then( profile => {
+    //   let commentArray = profile.comments;
+    //   let commentIndex = commentArray.indexOf(comment._id);
+    //   commentArray.splice(commentIndex, 1);
+    //   Profile.findByIdAndUpdate( profile._id, { $set: { comments: commentArray } }, { new: true } )
+    //   .catch(next);
+    //   return comment;
+    // })
+    .then( tempComment => {
+      Recipe.findById(tempComment.recipeID)
+      .then( recipe => {
 
-      let commentArray = recipe.comments;
-      let commentIndex = commentArray.indexOf(comment._id);
+        let commentArray = recipe.comments;
+        let commentIndex = commentArray.indexOf(tempComment._id);
 
-      commentArray.splice(commentIndex, 1);
+        commentArray.splice(commentIndex, 1);
 
-      Recipe.findByIdAndUpdate( recipe._id, { $set: { comments: commentArray } }, { new: true} )
-      .then( () => ResComment.findByIdAndRemove(comment._id))
-      .then( () => {
-        res.status(204).send();
+        Recipe.findByIdAndUpdate( recipe._id, { $set: { comments: commentArray } }, { new: true} )
+        .then( () => ResComment.findByIdAndRemove(tempComment._id))
+        .then( () => {
+          res.status(204).send();
+        })
+        .catch(next);
       })
       .catch(next);
     })
     .catch(next);
-  })
-  .catch(next);
 });
 
 commentRouter.put('/api/comment/:id', bearerAuth, jsonParser, function(req, res, next) {
