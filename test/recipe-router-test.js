@@ -216,6 +216,44 @@ describe('Recipe Routes', () => {
       });
     });
   });
+  describe.only('GET /api/allrecipes', () => {
+    beforeEach( done => {
+      exampleRecipe.profileID = this.tempProfile._id;
+      new Recipe(exampleRecipe).save()
+      .then( recipe => {
+        this.tempRecipe = recipe;
+        this.tempProfile.recipes.push(this.tempRecipe._id);
+        return Profile.findByIdAndUpdate(this.tempProfile._id, { $set: {recipes: this.tempProfile.recipes } }, { new: true } );
+      })
+      .then( () => done())
+      .catch(done);
+    });
+    afterEach( done => {
+      Recipe.remove({})
+      .then( () => {
+        delete exampleRecipe.profileID;
+        done();
+      })
+      .catch(done);
+    });
+    describe('with a valid path', () => {
+      it('should return a list of all recipes for all profiles', done => {
+        request.get(`${url}/api/allrecipes`)
+        .end((err, res) => {
+          if (err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body[0]._id.toString()).to.equal(this.tempRecipe._id.toString());
+          expect(res.body[0].profileID.toString()).to.equal(this.tempRecipe.profileID.toString());
+          expect(res.body[0].categories.toString()).to.equal(this.tempRecipe.categories.toString());
+          expect(res.body[0].ingredients.toString()).to.equal(this.tempRecipe.ingredients.toString());
+          expect(res.body[0].instructions).to.equal(this.tempRecipe.instructions);
+          expect(res.body[0].recipeName).to.equal(this.tempRecipe.recipeName);
+          expect(res.body.length).to.equal(1);
+          done();
+        });
+      });
+    });
+  });
   describe('PUT /api/recipe/:id', () => {
     beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
