@@ -76,7 +76,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
   debug('DELETE: /api/upvote/:id');
 
   Upvote.findById(req.params.id)
-  .then(upvote => {
+  .then( upvote => {
     let tempUpvote = upvote;
     return tempUpvote;
   })
@@ -90,9 +90,7 @@ upvoteRouter.delete('/api/upvote/:id', bearerAuth, function(req, res, next) {
     //   .catch(next);
     //   return upvote;
     // })
-  .then(tempUpvote => {
-    console.log('*******************************************')
-    console.log('TEMP UPVOTE', tempUpvote);
+  .then( tempUpvote => {
     Recipe.findById(tempUpvote.recipeID)
     .then( recipe => {
       let upvoteArray = recipe.upvotes;

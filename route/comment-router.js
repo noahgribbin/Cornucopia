@@ -89,25 +89,25 @@ commentRouter.delete('/api/comment/:id', bearerAuth, function(req, res, next) {
     //   .catch(next);
     //   return comment;
     // })
-    .then( tempComment => {
-      Recipe.findById(tempComment.recipeID)
-      .then( recipe => {
+  .then( tempComment => {
+    Recipe.findById(tempComment.recipeID)
+    .then( recipe => {
 
-        let commentArray = recipe.comments;
-        let commentIndex = commentArray.indexOf(tempComment._id);
+      let commentArray = recipe.comments;
+      let commentIndex = commentArray.indexOf(tempComment._id);
 
-        commentArray.splice(commentIndex, 1);
+      commentArray.splice(commentIndex, 1);
 
-        Recipe.findByIdAndUpdate( recipe._id, { $set: { comments: commentArray } }, { new: true} )
-        .then( () => ResComment.findByIdAndRemove(tempComment._id))
-        .then( () => {
-          res.status(204).send();
-        })
-        .catch(next);
+      Recipe.findByIdAndUpdate( recipe._id, { $set: { comments: commentArray } }, { new: true} )
+      .then( () => ResComment.findByIdAndRemove(tempComment._id))
+      .then( () => {
+        res.status(204).send();
       })
       .catch(next);
     })
     .catch(next);
+  })
+  .catch(next);
 });
 
 commentRouter.put('/api/comment/:id', bearerAuth, jsonParser, function(req, res, next) {
