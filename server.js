@@ -33,4 +33,4 @@ app.use(commentRouter);
 app.use(upvoteRouter);
 app.use(errors);
 
-app.listen((process.env.PORT || 8000), () => debug('server up!'));
+app.listen((process.env.PORT || 8000), () => debug('server up!', process.env.PORT));
