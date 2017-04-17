@@ -6,6 +6,7 @@ const Schema = mongoose.Schema;
 const recipeSchema = Schema({
   profileID: { type: Schema.Types.ObjectId, required: true, unique: true },
   ingredients: [{ type: String, required: true}],
+  recipePicURI: { type: String },
   instructions: { type: String, required: true },
   recipeName: { type: String },
   categories: [{ type: String, required: true }],
