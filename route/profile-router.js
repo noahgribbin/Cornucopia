@@ -23,10 +23,10 @@ profileRouter.post('/api/profile', bearerAuth, jsonParser, function(req, res, ne
   .catch(next);
 });
 
-profileRouter.get('/api/profile', bearerAuth, jsonParser, function(req, res, next) {
-  debug('GET: /api/profile');
+profileRouter.get('/api/profile/:id', function(req, res, next) {
+  debug('GET: /api/profile/:id');
 
-  Profile.findOne( {userID: req.user._id} )
+  Profile.findOne( {userID: req.params.id})
   .then( profile => res.json(profile))
   .catch(next);
 });
