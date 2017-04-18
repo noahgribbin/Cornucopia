@@ -32,10 +32,10 @@ function s3uploadProm(params) {
   });
 }
 
-picRouter.post('/api/profile/:theID/pic', bearerAuth, upload.single('image'), function(req, res, next){
+picRouter.post('/api/profile/:theID/pic', bearerAuth, upload.single('file'), function(req, res, next){
   debug('POST /api/profile/:theID/pic');
 
-  if(!req.file) return next(createError(400, 'file not found!'));
+  if (!req.file) return next(createError(400, 'file not found!'));
   if (!req.file.path) return next(createError(500, 'file not saved'));
 
   let ext = path.extname(req.file.originalname);
@@ -59,14 +59,14 @@ picRouter.post('/api/profile/:theID/pic', bearerAuth, upload.single('image'), fu
   })
   .then(pic => {
     let update = {};
-    update.profilePicURI = pic.theID;
+    update.profilePicURI = pic.imageURI;
     Profile.findByIdAndUpdate(pic.theID, update, { new: true })
     .then(profile => res.json(profile));
   })
   .catch(next);
 });
 
-picRouter.post('/api/recipe/:theID/pic', bearerAuth, upload.single('image'), function(req, res, next){
+picRouter.post('/api/recipe/:theID/pic', bearerAuth, upload.single('file'), function(req, res, next){
   debug('POST /api/recipe/:theID/pic');
 
   if(!req.file) return next(createError(400, 'file not found!'));
@@ -93,7 +93,7 @@ picRouter.post('/api/recipe/:theID/pic', bearerAuth, upload.single('image'), fun
   })
   .then(pic => {
     let update = {};
-    update.recipePicURI = pic.theID;
+    update.recipePicURI = pic.imageURI;
     Recipe.findByIdAndUpdate(pic.theID, update, { new: true })
     .then(recipe => res.json(recipe));
   })
