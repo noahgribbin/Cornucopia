@@ -26,19 +26,20 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   debug('GET /api/signin');
+
+  let response = {};
+
   User.findOne({ username: req.auth.username})
   .then( user => {
     return user.comparePasswordHash(req.auth.password);
   })
   .then( user => {
-    let response = {
-      userinfo: user,
-      token: user.generateToken()
-    };
-    return response;
+    response.user = user;
+    return user.generateToken();
   })
   .then( token => {
-    res.send(token);
+    response.token = token;
+    res.send(response);
   })
   .catch(next);
 });
