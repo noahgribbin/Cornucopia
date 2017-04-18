@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 
 const recipeSchema = Schema({
   profileID: { type: Schema.Types.ObjectId, required: true },
-  description: { type: String, required: true },
-  ingredients: [{ type: String, required: true}],
+  description: { type: Array, required: true },
+  ingredients: [{ type: Array, required: true}],
   instructions: { type: String, required: true },
   cookTime: { type: String, required: true },
   prepTime: { type: String, required: true },
