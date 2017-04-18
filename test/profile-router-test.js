@@ -119,38 +119,39 @@ describe('Profile Routes', () => {
       });
     });
   });
-  describe('GET /api/profile/:id', () => {
-    before( done => {
-      exampleProfile.userID = this.tempUser._id.toString();
-      new Profile(exampleProfile).save()
-      .then( profile => {
-        this.tempProfile = profile;
-        done();
-      })
-      .catch(err => done(err));
-    });
-    describe('with a valid profile id', () => {
-      it('should return a profile', done => {
-        request.get(`${url}/api/profile/${this.tempProfile._id.toString()}`)
-        .end((err, res) => {
-          if (err) return done(err);
-          expect(res.status).to.equal(200);
-          expect(res.body.name).to.equal(exampleProfile.name);
-          expect(res.body.profilePicURI).to.equal(exampleProfile.profilePicURI);
-          done();
-        });
-      });
-    });
-    describe('without a valid profile id', () => {
-      it('should return a 404 error', done => {
-        request.get(`${url}/api/profile/n0taval1d1d00p5`)
-        .end( err => {
-          expect(err.status).to.equal(404);
-          done();
-        });
-      });
-    });
-  });
+  // describe('GET /api/profile', () => {
+  //   before( done => {
+  //     exampleProfile.userID = this.tempUser._id.toString();
+  //     new Profile(exampleProfile).save()
+  //     .then( profile => {
+  //       this.tempProfile = profile;
+  //       done();
+  //     })
+  //     .catch(err => done(err));
+  //   });
+  //   describe('with a valid profile id', () => {
+  //     it('should return a profile', done => {
+  //       request.get(`${url}/api/profile`)
+  //       .set( { Authorization: `Bearer ${this.tempToken}` } )
+  //       .end((err, res) => {
+  //         if (err) return done(err);
+  //         expect(res.status).to.equal(200);
+  //         expect(res.body.name).to.equal(exampleProfile.name);
+  //         expect(res.body.profilePicURI).to.equal(exampleProfile.profilePicURI);
+  //         done();
+  //       });
+  //     });
+  //   });
+    // describe('without a valid profile id', () => {
+    //   it('should return a 404 error', done => {
+    //     request.get(`${url}/api/profile/n0taval1d1d00p5`)
+    //     .end( err => {
+    //       expect(err.status).to.equal(404);
+    //       done();
+    //     });
+    //   });
+    // });
+  // });
   describe('GET /api/allprofiles', () => {
     before( done => {
       exampleProfile.userID = this.tempUser._id.toString();
