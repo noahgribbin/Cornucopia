@@ -216,7 +216,7 @@ describe('Recipe Routes', () => {
       });
     });
   });
-  describe.only('GET /api/allrecipes', () => {
+  describe('GET /api/allrecipes', () => {
     beforeEach( done => {
       exampleRecipe.profileID = this.tempProfile._id;
       new Recipe(exampleRecipe).save()

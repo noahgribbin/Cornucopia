@@ -26,6 +26,14 @@ profileRouter.post('/api/profile', bearerAuth, jsonParser, function(req, res, ne
 profileRouter.get('/api/profile/:id', function(req, res, next) {
   debug('GET: /api/profile/:id');
 
+  Profile.findOne( {userID: req.params.id})
+  .then( profile => res.json(profile))
+  .catch(next);
+});
+
+profileRouter.get('/api/profile2/:id', function(req, res, next) {
+  debug('GET: /api/profile2/:id');
+
   Profile.findById(req.params.id)
   .then( profile => res.json(profile))
   .catch(next);
