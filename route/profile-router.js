@@ -31,6 +31,14 @@ profileRouter.get('/api/profile/:id', function(req, res, next) {
   .catch(next);
 });
 
+profileRouter.get('/api/profile2/:id', function(req, res, next) {
+  debug('GET: /api/profile2/:id');
+
+  Profile.findById(req.params.id)
+  .then( profile => res.json(profile))
+  .catch(next);
+});
+
 profileRouter.get('/api/allprofiles', function(req, res, next) {
   debug('GET: /api/allprofiles');
 
